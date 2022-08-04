@@ -1,0 +1,24 @@
+---
+- hosts: pihole,debian,centos
+  vars:
+    package_names:
+      - SplunkForwarder
+  
+  tasks:
+    - name: "Check if listed package is installed or not on Debian based servers"
+      command: dpkg-query -l "{{ item }}"
+      loop: "{{ package_names }}"
+      register: package_check
+      when: ansible_facts['distribution'] != 'CentOS'
+
+    - name: "Check if listed package is installed or not on CentOS based servers"
+      command: rpm -q "{{ item }}"
+      loop: "{{ package_names }}"
+      register: package_check
+      when: ansible_facts['distribution'] == 'CentOS'
+
+    - name: "Print results"
+      debug:
+        msg: "Package is installed"
+      when: package_check is succeeded
+      

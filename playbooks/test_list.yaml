@@ -1,0 +1,15 @@
+---
+- hosts: localhost
+  gather_facts: false
+
+  tasks:
+
+    - set_fact:
+        list: ["item1","item2"]
+
+    - debug: 
+        var: "{{ item }}"
+      loop:
+        - list
+
+  

@@ -1,0 +1,14 @@
+---
+- name: Sample playbook
+  hosts: test1.local.lan
+  remote_user: ansible
+  become: yes
+  become_method: sudo
+  gather_facts: true
+
+  tasks:
+
+  - name: Test copy file
+    copy:
+      src: ./files/test.txt
+      dest: /home/eingram
