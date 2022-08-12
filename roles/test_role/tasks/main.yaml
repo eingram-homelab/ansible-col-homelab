@@ -1,8 +1,0 @@
----
-- name: Allow port 161 UDP
-  include_role: 
-    name: firewall
-  loop:
-    - "161/udp"
-  loop_control:
-    loop_var: port

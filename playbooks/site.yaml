@@ -1,0 +1,74 @@
+---
+# TAGS - eingram, chrony, snmpd, splunk, container_host, webapps, node_exporter, windows_exporter, test
+- name: Run site baseline plays
+  hosts: "{{ hostvar|default([]) }}"
+  gather_facts: true
+  become: true
+  become_method: sudo
+  
+  roles:
+    - role: add_eingram_user
+      tags:
+        - never
+        - add_eingram_user
+    - role: chrony
+      tags:
+        - never
+        - chrony
+    - role: install_packages
+      tags:
+        - never
+        - install_packages
+    - role: container_host
+      tags:
+        - never
+        - container_host
+    - role: splunk_uf
+      tags:
+        - never
+        - splunk_uf
+    - role: snmpd
+      tags:
+        - never
+        - snmpd
+    - role: node_exporter
+      tags:
+        - never
+        - node_exporter
+    - role: webapps
+      tags:
+        - never
+        - webapps
+    - role: rhel_sub_add
+      tags:
+        - never
+        - rhel_sub_add
+    - role: rhel_sub_del 
+      tags:
+        - never
+        - rhel_sub_del
+    - role: test_role
+      tags:
+        - never
+        - test
+    - role: windows_exporter
+      tags:
+        - never
+        - windows_exporter
+
+- name: Add target to prometheus server
+  hosts: grafana.local.lan
+  gather_facts: false
+  become_user: poduser
+  become_method: sudo
+
+  roles:
+    - role: prometheus_target_update_nix
+      tags:
+        - never
+        - node_exporter
+    - role: prometheus_target_update_win
+      tags:
+        - never
+        - windows_exporter
+
