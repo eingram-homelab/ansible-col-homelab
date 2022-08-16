@@ -1,5 +1,5 @@
 ---
-- hosts: "{{ hostvar|all }}"
+- hosts: all
   gather_facts: yes
   become: false
   tasks:
