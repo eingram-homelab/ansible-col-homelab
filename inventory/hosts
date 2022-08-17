@@ -37,4 +37,4 @@ grafana.local.lan ansible_host=podhost1.local.lan
 # ansible_ssh_private_key_file=~/ssh-key-ansible
 
 [Windows]
-HL-DC1.HOMELAB.LOCAL ansible_connection=winrm ansible_port=5986
+HL-DC1.HOMELAB.LOCAL ansible_connection=winrm ansible_port=5985
