@@ -38,3 +38,4 @@ grafana.local.lan ansible_host=podhost1.local.lan
 
 [Windows]
 HL-DC1.HOMELAB.LOCAL ansible_connection=winrm ansible_port=5985
+HL-SRV1.HOMELAB.LOCAL ansible_connection=winrm ansible_port=5985
