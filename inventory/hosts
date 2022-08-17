@@ -12,30 +12,8 @@ yc-appsrv1
 [digitalocean:vars]
 ansible_user=ansible
 
-[piholes:vars]
-ansible_user=ansible
-
-[Linux:vars]
-ansible_user=ansible
-
 [apps]
 grafana.local.lan ansible_host=podhost1.local.lan
 
-# [windows:vars]
-# ansible_user=ansible
-# ansible_become_user=ansible
-# ansible_password="{{ lookup('hashi_vault','secret=secret/data/ssh/ansible:ssh_password') }}"
-# ansible_connection=winrm
-# ansible_winrm_server_cert_validation=ignore
-# ansible_winrm_transport=basic
-# ansible_winrm_port=5985
-# ansible_become_method=runas
 
-# [gcp:vars]
-# ansible_host=34.94.14.166 
-# ansible_user=sa_117086173709125868794 
-# ansible_ssh_private_key_file=~/ssh-key-ansible
 
-[Windows]
-HL-DC1.HOMELAB.LOCAL ansible_connection=winrm ansible_port=5985
-HL-SRV1.HOMELAB.LOCAL ansible_connection=winrm ansible_port=5985
