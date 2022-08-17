@@ -1,47 +1,36 @@
-# Run with ansible-playbook -kK
-
 ---
 - name: Run this to allow passwordless ssh and passwordless sudo 
-  hosts: "{{ hostvar|default([]) }}"
+  hosts: all
   gather_facts: no
-  remote_user: eingram
   become: yes
   become_method: sudo
-
-  vars_prompt:
-    - name: "hosts_prompt"
-      prompt: "MAKE SURE TO RUN THIS WITH -kK - Enter host/group to add new ssh keys to"
-      private: no
-    - name: "pub_key"
-      prompt: "Enter ssh pub key"
-      private: no
   
   tasks:
   
     - name: Create user .ssh dir
       file:
-        path: "/home/eingram/.ssh"
-        owner: eingram
-        group: eingram
+        path: "/home/ansible/.ssh"
+        owner: ansible
+        group: ansible
         mode: 0755
         state: directory
 
     - name: Create authorized_keys if not already existing
       file:
-        path: "/home/eingram/.ssh/authorized_keys"
-        owner: eingram
-        group: eingram
+        path: "/home/ansible/.ssh/authorized_keys"
+        owner: ansible
+        group: ansible
         mode: 0600
         state: touch
 
     - name: Add public key
       lineinfile:
-        path: "/home/eingram/.ssh/authorized_keys"
-        line: "{{ pub_key }}"
+        path: "/home/ansible/.ssh/authorized_keys"
+        line: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCwwvtM55JcbHVFcpq6uJAZ5qZj4z1FI0fYzTwLOm7Xef9kCYKtwBqNH/ixWfYbeM3qKfwP3JrdldEVi5cJauWt8YzHnAAeBcKkHJk47rI26P+DuLfnfnrX5PkIkwX7dUl4C/4ShJNsgTquI9xdwGWHwGpp9NZNTx+Z02A7/ANpCVjGYqDAahlhXYXAr3wEJ7wZucGgbNF8Ru/vlhqdYBXPKxcTW+rIT+wt6D+48bmmwWRZw7W06EBPYSArpiNuonT4ChFb8Zz8ZcFpAde71ya12GjPnroH3Fq53+3t+CTINcMEJPjiOBUy+q61L7QpCVKW9LLhqpxsInUKtZjPDdP080htSPDstoHEDGqqdPWrszfazIwEJZkoLp6eMnEWztB+DNNGuZT4l/tGs6uSL9tuUjuitLSO5zPxrY2fPJm4iZrx294UrmPooUm3LNojlgZ96N9FxPxx1DBg8x6PJgRF24RmHh1oAwBToFn8BwIfjdCe728b1qsxH/LUCKiZrnc= edwardingram@Edwards-MBP.local.lan"
 
     - name: Create sudoers.d entry
       file:
-        path: "/etc/sudoers.d/eingram"
+        path: "/etc/sudoers.d/ansible"
         owner: root
         group: root
         mode: 0644
@@ -49,6 +38,6 @@
 
     - name: Add sudo entry
       lineinfile:
-        path: "/etc/sudoers.d/eingram"
-        line: "eingram ALL=(ALL:ALL) NOPASSWD: ALL"
+        path: "/etc/sudoers.d/ansible"
+        line: "ansible ALL=(ALL:ALL) NOPASSWD: ALL"
         
