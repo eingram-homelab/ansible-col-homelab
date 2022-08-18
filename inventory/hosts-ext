@@ -1,0 +1,5 @@
+[digitalocean]
+yc-appsrv1
+
+[digitalocean:vars]
+ansible_user=ansible
