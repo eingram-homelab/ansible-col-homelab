@@ -1,6 +1,5 @@
 ---
-- hosts: "{{ host }}"
-  remote_user: eingram
+- hosts: all
   become: yes
   become_method: sudo
 

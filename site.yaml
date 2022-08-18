@@ -1,7 +1,7 @@
 ---
-# TAGS - eingram, chrony, snmpd, splunk, container_host, webapps, node_exporter, windows_exporter, test
+# TAGS - add_eingram_user, add_ansible_user, chrony, snmpd, splunk, container_host, webapps, node_exporter, windows_exporter, install_core_pkgs
 - name: Run site baseline plays
-  hosts: "{{ hostvar|default([]) }}"
+  hosts: all
   gather_facts: true
   become: true
   become_method: sudo
@@ -11,6 +11,10 @@
       tags:
         - never
         - add_eingram_user
+    - role: add_ansible_user
+      tags:
+        - never
+        - add_ansible_user
     - role: chrony
       tags:
         - never
@@ -18,7 +22,7 @@
     - role: install_packages
       tags:
         - never
-        - install_packages
+        - install_core_pcks
     - role: container_host
       tags:
         - never
@@ -47,10 +51,6 @@
       tags:
         - never
         - rhel_sub_del
-    - role: test_role
-      tags:
-        - never
-        - test
     - role: windows_exporter
       tags:
         - never

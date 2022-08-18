@@ -1,7 +1,6 @@
 ---
 - name: Get IP address of host
-  hosts: "{{ host }}"
-  remote_user: eingram
+  hosts: all
   gather_facts: yes
 
   vars_prompt:
