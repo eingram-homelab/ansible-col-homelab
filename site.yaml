@@ -19,10 +19,10 @@
       tags:
         - never
         - chrony
-    - role: install_core_pkgs
+    - role: install-core-pkgs
       tags:
         - never
-        - install_core_pkgs
+        - install-core-pkgs
     - role: container_host
       tags:
         - never

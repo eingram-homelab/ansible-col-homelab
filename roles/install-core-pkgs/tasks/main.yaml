@@ -1,0 +1,40 @@
+---
+- name: Install extra packages
+  ansible.builtin.package:
+    name: "{{ core_pkg_item }}"
+    state: installed
+  loop:
+    - yum-utils
+    - zip
+  loop_control:
+    loop_var: core_pkg_item
+
+- block:
+    - name: Enable powertools on rocky
+      ansible.builtin.shell: dnf config-manager --set-enabled powertools
+    
+    - name: Install rocky packages
+      ansible.builtin.dnf:
+        name: "{{ core_pkg_item_rocky }}"
+        state: present
+      loop:
+        - epel-release
+        - htop
+      loop_control:
+        loop_var: core_pkg_item_rocky
+  when: ansible_facts['distribution'] == 'Rocky'
+
+- block:
+    - name: Update subscription manager
+      ansible.builtin.shell: subscription-manager repos --enable codeready-builder-for-rhel-8-$(arch)-rpms
+
+    - name: Install rhel packages
+      ansible.builtin.dnf:
+        name: "{{ core_pkg_item_rhel }}"
+        state: present
+      loop:
+        - https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+        - htop
+      loop_control:
+        loop_var: core_pkg_item_rhel
+  when: ansible_facts['distribution'] == 'RedHat'
