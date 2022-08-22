@@ -1,0 +1,4 @@
+---
+splunk_working_directory: '/tmp/splunk/'
+splunk_uf_file_rpm: 'splunkforwarder-8.2.2-87344edfcdb4-linux-2.6-x86_64.rpm'
+splunk_uf_file_deb: 'splunkforwarder-8.2.2-87344edfcdb4-linux-2.6-amd64.deb'
