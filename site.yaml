@@ -7,14 +7,14 @@
   become_method: sudo
   
   roles:
-    - role: add_eingram_user
+    - role: add-eingram-user
       tags:
         - never
-        - add_eingram_user
-    - role: add_ansible_user
+        - add-eingram-user
+    - role: add-ansible-user
       tags:
         - never
-        - add_ansible_user
+        - add-ansible-user
     - role: chrony
       tags:
         - never
@@ -26,35 +26,35 @@
     - role: container_host
       tags:
         - never
-        - container_host
-    - role: splunk_uf
+        - container-host
+    - role: splunk-uf
       tags:
         - never
-        - splunk_uf
+        - splunk-uf
     - role: snmpd
       tags:
         - never
         - snmpd
-    - role: node_exporter
+    - role: node-exporter
       tags:
         - never
-        - node_exporter
+        - node-exporter
     - role: webapps
       tags:
         - never
         - webapps
-    - role: rhel_sub_add
+    - role: rhel-sub-add
       tags:
         - never
-        - rhel_sub_add
-    - role: rhel_sub_del 
+        - rhel-sub-add
+    - role: rhel-sub-del 
       tags:
         - never
-        - rhel_sub_del
-    - role: windows_exporter
+        - rhel-sub-del
+    - role: windows-exporter
       tags:
         - never
-        - windows_exporter
+        - windows-exporter
 
 - name: Add target to prometheus server
   hosts: grafana.local.lan
@@ -63,12 +63,12 @@
   become_method: sudo
 
   roles:
-    - role: prometheus_target_update_nix
+    - role: prometheus-target-update-nix
       tags:
         - never
-        - node_exporter
-    - role: prometheus_target_update_win
+        - node-exporter
+    - role: prometheus-target-update-win
       tags:
         - never
-        - windows_exporter
+        - windows-exporter
 

@@ -1,0 +1,5 @@
+---
+- name: Run subscription-manager to remove subscription
+  ansible.builtin.shell: subscription-manager remove --all
+  register: result
+  failed_when: result.rc != 0 and result.rc != 69

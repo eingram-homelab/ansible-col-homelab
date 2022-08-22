@@ -1,0 +1,33 @@
+---
+- name: Mount homenas Shared
+  hosts: "{{ hostvar|default([]) }}"
+  gather_facts: no
+  become: true
+  become_method: sudo
+  
+  vars:
+    cifs_user: "{{ lookup('hashi_vault','secret=secret/data/homenas/cifs:user') }}"
+    cifs_pwd: "{{ lookup('hashi_vault','secret=secret/data/homenas/cifs:passwd') }}"
+
+  tasks:
+
+    - name: Make sure cifs-utils is present
+      ansible.builtin.package:
+        name: cifs-utils
+        state: present
+        
+    - name: Create .smbpasswd file
+      ansible.builtin.copy:
+        dest: "/root/.smbpasswd"
+        content: |
+          username={{cifs_user}}
+          password={{cifs_pwd}}
+        mode: '0600'
+
+    - name: Mount //homenas.local.lan/Shared
+      ansible.posix.mount:
+        src: //homenas.local.lan/Shared
+        path: /mnt/Shared
+        opts: rw,credentials=/root/.smbpasswd,file_mode=0776,dir_mode=0777
+        state: mounted
+        fstype: cifs

@@ -1,0 +1,3 @@
+---
+sub_email: "{{ lookup('hashi_vault','secret=secret/data/rhel/dev:sub_email') }}"
+sub_password: "{{ lookup('hashi_vault','secret=secret/data/rhel/dev:sub_password') }}"

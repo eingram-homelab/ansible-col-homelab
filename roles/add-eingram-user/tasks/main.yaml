@@ -1,0 +1,31 @@
+---
+- name: Create eingram user
+  ansible.builtin.user:
+    name: eingram
+    password: $6$CRvGabIziUpx7Z5H$8dF37lNx/1d/e4XOvWjzQFkmJjBoLMNOI6M7ADKfCssptb/EI.k1IrTWz3gVj/El.1RfqLcGkrd3w0kZ7T/KM0
+    
+- name: Make sure we have a 'wheel' group
+  group:
+    name: wheel
+    state: present
+
+- name: Allow 'wheel' group to have passwordless sudo
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^%wheel'
+    line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+    validate: 'visudo -cf %s'
+
+- name: Add sudoers users to wheel group
+  user:
+    name=eingram
+    groups=wheel
+    append=yes
+    state=present
+    createhome=yes
+
+- name: Set up authorized keys for the deployer user
+  authorized_key: user=eingram key="{{item}}"
+  with_file:
+    - eingram_id_rsa.pub
