@@ -1,0 +1,19 @@
+---
+- name: Add entry to prometheus.yml
+  ansible.builtin.lineinfile:
+    path: /opt/prometheus/prometheus.yml
+    insertafter: '      - targets: \[''localhost:9100''\]'
+    regexp: '      - targets: \[''{{hostvar}}:9100''\]'
+    line: "      - targets: ['{{hostvar}}:9100']"
+  when: hostvar is defined 
+  notify: Restart prometheus container
+
+- name: Add entry to prometheus.yml (from new_build)
+  ansible.builtin.lineinfile:
+    path: /opt/prometheus/prometheus.yml
+    insertafter: '      - targets: \[''localhost:9100''\]'
+    regexp: '      - targets: \[''{{item}}.{{dns_suffix_list[0]}}:9100''\]'
+    line: "      - targets: ['{{item}}.{{dns_suffix_list[0]}}:9100']"
+  loop: "{{vm_name_list}}"
+  when: vm_name_list is defined
+  notify: Restart prometheus container

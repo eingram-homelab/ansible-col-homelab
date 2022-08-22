@@ -1,0 +1,28 @@
+---
+- name: Create program folder
+  ansible.windows.win_file:
+    path: C:\Program Files\windows_exporter
+    state: directory
+
+- name: Copy config file
+  ansible.windows.win_copy:
+    src: config.yml
+    dest: C:\Program Files\windows_exporter\config.yml
+
+- name: Copy windows_exporter installer to remote system
+  ansible.windows.win_copy:
+    src: windows_exporter-0.18.1-amd64.msi
+    dest: C:\temp\
+
+- name: Install windows_exporter
+  ansible.windows.win_package:
+    path: C:\temp\windows_exporter-0.18.1-amd64.msi
+    product_id: '{F6DCD1DB-A703-47EA-BEFF-7064DD34C2FC}'
+    arguments: 'EXTRA_FLAGS="--config.file=""C:\Program Files\windows_exporter\config.yml"""'
+    state: present
+
+- name: Start windows_exporter service if not started and set to auto
+  ansible.windows.win_service:
+    name: windows_exporter
+    start_mode: auto
+    state: started

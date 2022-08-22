@@ -1,0 +1,7 @@
+collectors:
+  enabled: cpu,cs,logical_disk,os,system,net,service
+collector:
+  service:
+    services-where: "Name='windows_exporter'"
+log:
+  level: warn
