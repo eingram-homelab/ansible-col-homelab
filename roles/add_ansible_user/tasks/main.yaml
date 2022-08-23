@@ -1,39 +1,31 @@
+---
 - name: Create ansible user
-  hosts: "{{ hostvar|default([]) }}"
-  gather_facts: false
-  remote_user: eingram
-  become: true
-  become_method: sudo
+  ansible.builtin.user:
+    name: ansible
+    password: $6$CRvGabIziUpx7Z5H$8dF37lNx/1d/e4XOvWjzQFkmJjBoLMNOI6M7ADKfCssptb/EI.k1IrTWz3gVj/El.1RfqLcGkrd3w0kZ7T/KM0
 
-  tasks:
+- name: Make sure we have a 'wheel' group
+  group:
+    name: wheel
+    state: present
 
-    - name: Create ansible user
-      ansible.builtin.user:
-        name: ansible
-        password: $6$CRvGabIziUpx7Z5H$8dF37lNx/1d/e4XOvWjzQFkmJjBoLMNOI6M7ADKfCssptb/EI.k1IrTWz3gVj/El.1RfqLcGkrd3w0kZ7T/KM0
-    
-    - name: Make sure we have a 'wheel' group
-      group:
-        name: wheel
-        state: present
+- name: Allow 'wheel' group to have passwordless sudo
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^%wheel'
+    line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+    validate: 'visudo -cf %s'
 
-    - name: Allow 'wheel' group to have passwordless sudo
-      lineinfile:
-        dest: /etc/sudoers
-        state: present
-        regexp: '^%wheel'
-        line: '%wheel ALL=(ALL) NOPASSWD: ALL'
-        validate: 'visudo -cf %s'
+- name: Add sudoers users to wheel group
+  user:
+    name=ansible
+    groups=wheel
+    append=yes
+    state=present
+    createhome=yes
 
-    - name: Add sudoers users to wheel group
-      user:
-        name=ansible
-        groups=wheel
-        append=yes
-        state=present
-        createhome=yes
-
-    - name: Set up authorized keys for the deployer user
-      authorized_key: user=ansible key="{{item}}"
-      with_file:
-        - id_rsa.pub
+- name: Set up authorized keys for the deployer user
+  authorized_key: user=ansible key="{{item}}"
+  with_file:
+    - id_rsa.pub
