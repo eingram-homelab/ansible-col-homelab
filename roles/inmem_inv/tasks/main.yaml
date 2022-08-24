@@ -1,7 +1,7 @@
 ---
 - name: Create in memory inventory
   add_host:
-    name: "{{ inmem_item }}.{{ dns_domain }}"
+    name: "{{ inmem_item }}.{{ dns_suffix_list[0] }}"
     groups: temp_group
   loop: "{{ vm_name_list }}"
   loop_control:
