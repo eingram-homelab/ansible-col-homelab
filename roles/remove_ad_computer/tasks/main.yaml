@@ -1,0 +1,5 @@
+---
+- name: Remove computer from homelab.local domain
+  community.windows.win_domain_computer:
+    name: "{{ ad_computer }}"
+    state: absent
