@@ -1,8 +1,4 @@
 ---
-- name: Debug ad_computer
-  ansible.builtin.debug:
-    var: ad_computer
-
 - name: Remove computer from homelab.local domain
   community.windows.win_domain_computer:
     name: "{{ ad_computer }}"
