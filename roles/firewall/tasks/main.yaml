@@ -1,0 +1,15 @@
+---
+- name: Install firewalld if needed
+  ansible.builtin.package: name=firewalld state=present
+
+- name: start firewalld
+  service: name=firewalld state=started enabled=yes
+    
+- name: Create firewall rules 
+  ansible.posix.firewalld:
+    port: "{{ port }}"
+    zone: public
+    permanent: yes
+    state: enabled
+  notify:
+    - Reload firewall

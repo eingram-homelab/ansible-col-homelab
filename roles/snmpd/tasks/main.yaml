@@ -1,0 +1,39 @@
+---
+- name: Check if LibreNMS agent already installed
+  stat:
+    path: '/usr/bin/distro'
+  register: librenms_agent_present
+
+- name: Install LibreNMS agent
+  shell: |
+    curl -o "{{ distro_file }}" "{{ librenms_agent_url }}"
+    chmod +x "{{ distro_file }}"
+  when: librenms_agent_present.stat.exists != true
+
+- name: Install snmpd if needed
+  package:
+    name: net-snmp
+    state: present
+    
+- name: Apply snmpd.conf settings
+  copy:
+    src: "{{ role_path }}/files/snmpd.conf"
+    dest: "{{ snmpd_dir }}"
+    backup: yes
+  notify:
+    - Restart snmpd
+
+- name: Enable snmpd service
+  ansible.builtin.systemd:
+    name: snmpd
+    state: started
+    enabled: yes
+
+- name: Allow port 161 UDP
+  include_role: 
+    name: firewall
+  loop:
+    - "161/udp"
+  loop_control:
+    loop_var: port
+

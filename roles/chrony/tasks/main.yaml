@@ -1,0 +1,32 @@
+---
+- name: Make sure chronyd is installed
+  ansible.builtin.package:
+    name: chrony
+    state: present
+
+- name: Make sure Chrony is started up
+  ansible.builtin.service: 
+    name: chronyd 
+    state: started
+    enabled: yes
+
+- name: deploy chrony.conf template
+  ansible.builtin.copy:
+    src: chrony.conf
+    dest: /etc/chrony.conf
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+  notify: 
+    - Restart chronyd
+    - Sync hwclock
+
+- name: Set timezone to America/Los_Angeles
+  community.general.timezone:
+    name: America/Los_Angeles
+  notify: 
+    - Restart chronyd
+    - Sync hwclock
+
+

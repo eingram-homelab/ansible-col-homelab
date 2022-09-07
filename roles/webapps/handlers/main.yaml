@@ -1,0 +1,11 @@
+---
+- name: Restart nginx
+  ansible.builtin.service:
+    name: nginx
+    enabled: yes
+    state: restarted
+
+- name: Reload firewalld
+  systemd:
+    name: firewalld
+    state: reloaded

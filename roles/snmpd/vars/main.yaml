@@ -1,0 +1,4 @@
+---
+snmpd_dir: '/etc/snmp/'
+distro_file: '/usr/bin/distro'
+librenms_agent_url: 'https://raw.githubusercontent.com/librenms/librenms-agent/master/snmp/distro'

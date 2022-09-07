@@ -1,0 +1,54 @@
+---
+- name: Make sure git is installed
+  package:
+    name: "git"
+    state: present
+
+- name: Make sure podman is installed
+  package:
+    name: "podman"
+    state: present
+
+- name: Install nginx
+  ansible.builtin.package:
+    name: "nginx"
+    state: present
+
+- name: Copy proxy.conf to /etc/nginx/conf.d
+  ansible.builtin.copy:
+    src: proxy.conf
+    dest: /etc/nginx/conf.d
+    mode: '0644'
+  notify: Restart nginx
+
+- name: Install firewalld if missing
+  ansible.builtin.package:
+    name: firewalld
+    state: present
+
+- name: Make sure firewalld is enabled and started
+  ansible.builtin.systemd:
+    state: started
+    enabled: true
+    name: firewalld
+
+- name: Make sure required firewall ports are open
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    state: enabled
+    zone: public
+  loop:
+    - 80/tcp
+  notify: Reload firewalld
+
+- name: install selinux-related python binaries for Ansible to work
+  package: name={{ item }} state=present
+  with_items:
+    - python3-libselinux
+    - python3-libsemanage
+
+- name: set "httpd_can_network_connect" flag on
+  seboolean: name={{ item }} state=yes persistent=yes
+  with_items:
+    - httpd_can_network_connect
