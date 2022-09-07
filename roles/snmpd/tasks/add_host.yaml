@@ -1,0 +1,11 @@
+---
+- name: Add host to LibreNMS (from project)
+  ansible.builtin.shell: /usr/bin/lnms device:add {{ snmp_host_item }}.{{ dns_suffix_list[0] }} --v2c -c public
+  loop: "{{ vm_name_list }}"
+  loop_control:
+    loop_var: snmp_host_item
+  when: vm_name_list is defined
+
+- name: Add host to LibreNMS
+  ansible.builtin.shell: /usr/bin/lnms device:add {{ hostvar }} --v2c -c public
+  when: hostvar is defined
