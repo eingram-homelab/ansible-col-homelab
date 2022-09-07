@@ -14,7 +14,7 @@
   package:
     name: net-snmp
     state: present
-  when: ansible_facts['distribution'] == 'RedHat' 
+  when: ansible_facts['distribution'] == 'RedHat' or ansible_facts['distribution'] == 'Rocky'
 
 - name: Install snmpd if needed
   package:
