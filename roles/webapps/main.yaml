@@ -44,11 +44,11 @@
 
 - name: install selinux-related python binaries for Ansible to work
   package: name={{ item }} state=present
-  with_items:
+  loop:
     - python3-libselinux
     - python3-libsemanage
 
 - name: set "httpd_can_network_connect" flag on
   seboolean: name={{ item }} state=yes persistent=yes
-  with_items:
+  loop:
     - httpd_can_network_connect
