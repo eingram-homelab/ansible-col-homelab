@@ -1,5 +1,5 @@
 ---
-- name: Add host to LibreNMS (from project)
+- name: Remove host(s) from LibreNMS (from project)
   ansible.builtin.shell: /usr/bin/lnms device:remove {{ snmp_host_item }}.{{ dns_suffix_list[0] }}
   register: fail
   failed_when: "fail.rc != 0 and fail.rc != 3"
@@ -8,7 +8,7 @@
     loop_var: snmp_host_item
   when: vm_name_list is defined
 
-- name: Add host to LibreNMS
+- name: Remove host from LibreNMS
   ansible.builtin.shell: /usr/bin/lnms device:remove {{ hostvar }}
   register: fail
   failed_when: "fail.rc != 0 and fail.rc != 3"

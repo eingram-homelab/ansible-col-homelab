@@ -1,5 +1,5 @@
 ---
-- name: Add host to LibreNMS (from project)
+- name: Add host(s) to LibreNMS (from project)
   ansible.builtin.shell: /usr/bin/lnms device:add {{ snmp_host_item }}.{{ dns_suffix_list[0] }} --v2c -c public
   register: fail
   failed_when: "fail.rc != 0 and fail.rc != 3"
