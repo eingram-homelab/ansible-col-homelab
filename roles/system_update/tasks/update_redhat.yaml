@@ -1,0 +1,27 @@
+---
+- name: Install dnf-utils (if needed)
+  package:
+    name: dnf-utils
+
+- name: Update repo info and update installed packages 
+  dnf:
+    name: '*'
+    state: latest
+    update_cache: yes
+
+- name: Remove unneeded packages
+  dnf:
+    autoremove: yes
+
+- include_role:
+    name: checkreboot
+
+- name: Reboot host 
+  reboot:
+  when: reboot_required_rhel.rc != 0 and
+        reboot == "y"
+
+- name: Remove unused kernels 
+  shell: dnf remove --oldinstallonly -y
+  when: reboot_required_rhel.rc != 0 and
+        reboot == "y"

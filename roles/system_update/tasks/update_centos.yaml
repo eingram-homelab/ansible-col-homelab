@@ -1,0 +1,27 @@
+---
+- name: Install yum-utils (if needed)
+  package:
+    name: yum-utils
+
+- name: Update repo info and update installed packages 
+  yum:
+    name: '*'
+    state: latest
+    update_cache: yes
+
+- name: Remove unneeded packages
+  yum:
+    autoremove: yes
+
+- include_role:
+    name: checkreboot
+
+- name: Reboot host 
+  reboot:
+  when: reboot_required_centos.rc != 0 and 
+        reboot == "y"
+
+- name: Remove unused kernels 
+  shell: package-cleanup --oldkernels -y
+  when: reboot_required_centos.rc != 0 and 
+        reboot == "y"

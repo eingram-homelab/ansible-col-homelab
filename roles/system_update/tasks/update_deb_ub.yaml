@@ -1,0 +1,24 @@
+---
+- name: Update repo info and update installed packages 
+  apt:
+    name: '*'
+    state: latest
+    update_cache: yes
+    force_apt_get: yes
+
+- name: Remove unneeded packages
+  apt:
+    autoremove: yes
+
+- include_role:
+    name: checkreboot
+
+- name: Reboot host 
+  reboot:
+  when: reboot_required_ubdeb.stat.exists and
+        reboot == "y"
+
+- name: Remove unused kernels 
+  shell: apt-get purge --autoremove -y
+  when: reboot_required_ubdeb.stat.exists and
+        reboot == "y"

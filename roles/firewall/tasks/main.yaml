@@ -3,13 +3,16 @@
   ansible.builtin.package: name=firewalld state=present
 
 - name: start firewalld
-  service: name=firewalld state=started enabled=yes
-    
-- name: Create firewall rules 
+  ansible.builtin.service: name=firewalld state=started enabled=yes
+
+- name: Create firewall rules
   ansible.posix.firewalld:
-    port: "{{ port }}"
+    port: "{{ fw_port_item }}"
     zone: public
-    permanent: yes
+    permanent: true
     state: enabled
+  loop: "{{ fw_port }}"
+  loop_control:
+    loop_var: fw_port_item
   notify:
     - Reload firewall

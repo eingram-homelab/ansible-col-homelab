@@ -39,8 +39,6 @@
 - name: Allow port 161 UDP
   include_role: 
     name: eingram23.homelab.firewall
-  loop:
-    - "161/udp"
-  loop_control:
-    loop_var: port
-
+  vars:
+    fw_port: 
+      - "161/udp"
