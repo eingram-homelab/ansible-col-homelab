@@ -1,0 +1,9 @@
+- name: Add firewall rule
+  community.windows.win_firewall_rule:
+    name: "{{ rule_name }}"
+    localport: "{{ port }}"
+    action: allow
+    direction: in
+    protocol: "{{ protocol }}"
+    state: present
+    enabled: true
