@@ -6,7 +6,7 @@
 
 - name: Enable snmp service
   ansible.windows.win_service:
-    name: snmpservice
+    name: SNMP
     start_mode: auto
     state: started
 
