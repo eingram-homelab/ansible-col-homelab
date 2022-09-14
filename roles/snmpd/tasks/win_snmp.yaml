@@ -17,3 +17,11 @@
     permitted_managers:
       - librenms.local.lan
     action: set
+
+- name: Allow 161 udp through firewall
+  ansible.builtin.include_role:
+    name: eingram23.homelab.win_firewall
+  vars:
+    rule_name: "SNMP UDP"
+    fw_port: "161"
+    protocol: "udp"
