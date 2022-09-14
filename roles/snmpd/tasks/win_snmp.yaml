@@ -1,0 +1,19 @@
+---
+- name: Install SNMP Windows feature
+  ansible.windows.win_feature:
+    name: SNMP-Service
+    state: present
+
+- name: Enable snmp service
+  ansible.windows.win_service:
+    name: snmpservice
+    start_mode: auto
+    state: started
+
+- name: Configure snmp settings
+  community.windows.win_snmp:
+    community_strings:
+      - public
+    permitted_managers:
+      - librenms.local.lan
+    action: set
