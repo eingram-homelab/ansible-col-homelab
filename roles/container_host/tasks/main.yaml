@@ -8,6 +8,11 @@
   ansible.builtin.command: loginctl enable-linger poduser
 
 - name: Make sure podman is installed
-  package:
-    name: "podman"
+  ansible.builtin.package:
+    name: podman
+    state: present
+
+- name: Install podman-plugins
+  ansible.builtin.package:
+    name: podman-plugins
     state: present
