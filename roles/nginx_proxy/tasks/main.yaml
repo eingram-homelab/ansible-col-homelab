@@ -12,10 +12,10 @@
     name: "nginx"
     state: present
 
-- name: Copy default.conf to /etc/nginx/conf.d
+- name: Copy proxy.conf to /etc/nginx/conf.d
   ansible.builtin.copy:
-    src: default.conf
-    dest: /etc/nginx/conf.d/default.conf
+    src: proxy.conf
+    dest: /etc/nginx/conf.d/proxy.conf
     mode: '0644'
 
 - name: Install firewalld if missing
