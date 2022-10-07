@@ -1,12 +1,10 @@
 ---
+- ansible.builtin.include_role:
+    name: eingram23.homelab.container_host
+
 - name: Make sure git is installed
   ansible.builtin.package:
     name: "git"
-    state: present
-
-- name: Make sure podman is installed
-  ansible.builtin.package:
-    name: "podman"
     state: present
 
 - name: Install nginx
@@ -49,7 +47,7 @@
 - name: set "httpd_can_network_connect" flag on
   ansible.builtin.seboolean: 
     name: "{{ item }}"
-    state: present
+    state: true
     persistent: true
   loop:
     - httpd_can_network_connect
