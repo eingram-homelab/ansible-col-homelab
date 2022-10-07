@@ -1,0 +1,55 @@
+---
+- name: Make sure git is installed
+  ansible.builtin.package:
+    name: "git"
+    state: present
+
+- name: Make sure podman is installed
+  ansible.builtin.package:
+    name: "podman"
+    state: present
+
+- name: Install nginx
+  ansible.builtin.package:
+    name: "nginx"
+    state: present
+
+- name: Copy default.conf to /etc/nginx/conf.d
+  ansible.builtin.copy:
+    src: default.conf
+    dest: /etc/nginx/conf.d/default.conf
+    mode: '0644'
+
+- name: Install firewalld if missing
+  ansible.builtin.package:
+    name: firewalld
+    state: present
+
+- name: Make sure firewalld is enabled and started
+  ansible.builtin.systemd:
+    state: started
+    enabled: true
+    name: firewalld
+
+- name: Make sure required firewall ports are open
+  ansible.builtin.include_role:
+    name: eingram23.homelab.firewall
+  vars:
+    fw_port:
+      - "80/tcp"
+
+- name: install selinux-related python binaries for Ansible to work
+  ansible.builtin.package: 
+    name: "{{ item }}"
+    state: present
+  loop:
+    - python3-libselinux
+    - python3-libsemanage
+
+- name: set "httpd_can_network_connect" flag on
+  ansible.builtin.seboolean: 
+    name: "{{ item }}"
+    state: present
+    persistent: true
+  loop:
+    - httpd_can_network_connect
