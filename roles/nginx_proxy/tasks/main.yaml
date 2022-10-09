@@ -17,6 +17,7 @@
     src: proxy.conf
     dest: /etc/nginx/conf.d/proxy.conf
     mode: '0644'
+  notify: Restart nginx
 
 - name: Install firewalld if missing
   ansible.builtin.package:

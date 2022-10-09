@@ -5,7 +5,3 @@
     enabled: true
     state: restarted
 
-- name: Reload firewalld
-  systemd:
-    name: firewalld
-    state: reloaded
