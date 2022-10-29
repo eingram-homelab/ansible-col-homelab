@@ -1,0 +1,3 @@
+---
+- name: Pause playbook to allow ee inspection
+  prompt: Pause playbook here
