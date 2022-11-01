@@ -6,3 +6,6 @@
   loop: "{{ vm_name_list }}"
   loop_control:
     loop_var: inmem_item
+
+- name:
+  add
