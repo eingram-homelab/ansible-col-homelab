@@ -4,6 +4,7 @@
     name: "{{ inmem_item }}.{{ dns_suffix_list[0] }}"
     groups: temp_group
     ansible_user: "{{ inmem_user }}"
+    ansible_become_user: "{{ inmem_user }}"
     ansible_password: "{{ lookup('hashi_vault', 'secret=secret/ssh/eingram:ssh_password') }}"
   loop: "{{ vm_name_list }}"
   loop_control:
