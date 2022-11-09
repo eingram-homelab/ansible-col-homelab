@@ -6,6 +6,7 @@
   loop:
     - yum-utils
     - zip
+    - git
   loop_control:
     loop_var: core_pkg_item
 
