@@ -8,7 +8,6 @@
     - zip
     - git
     - bind-utils
-    - git
   loop_control:
     loop_var: core_pkg_item
 
