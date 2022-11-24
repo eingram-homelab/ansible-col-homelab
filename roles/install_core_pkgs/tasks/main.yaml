@@ -4,6 +4,7 @@
     name: "{{ core_pkg_item }}"
     state: installed
   loop:
+    - python3
     - yum-utils
     - zip
     - git
