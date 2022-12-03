@@ -15,7 +15,7 @@
 - block:
     - name: Enable powertools on rocky
       ansible.builtin.shell: dnf config-manager --set-enabled powertools
-      when: ansible_facts['ansible_distribution_major_version'] == '8'
+      when: ansible_facts['distribution_major_version'] == '8'
   
     - name: Install rocky packages
       ansible.builtin.dnf:
