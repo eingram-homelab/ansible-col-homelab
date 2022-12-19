@@ -1,0 +1,28 @@
+---
+- name: Install zfs-release
+  ansible.builtin.dnf:
+    name: https://zfsonlinux.org/epel/zfs-release-2-2.el9.noarch.rpm
+    state: present
+
+- name: Instal epel-release
+  ansible.builtin.dnf:
+    name: epel-release
+    state: present
+
+- name: Install DKMS package
+  ansible.builtin.dnf:
+    name: dkms
+
+- name: Disable ZFS repo, enable ZFS-KMOD and install ZFS
+  ansible.builtin.dnf:
+    disablerepo:
+      - zfs
+    enablerepo:
+      - zfs-kmod
+    name: zfs
+    state: present
+
+- name: Enable ZFS module
+  community.general.modprobe:
+    name: zfs
+    state: present
