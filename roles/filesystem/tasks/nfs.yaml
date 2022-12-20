@@ -1,0 +1,6 @@
+---
+- name: Install nfs-utils
+  ansible.builtin.package:
+    name: nfs-utils
+    state: present
+    

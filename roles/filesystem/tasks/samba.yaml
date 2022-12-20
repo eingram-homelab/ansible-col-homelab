@@ -1,0 +1,20 @@
+---
+- name: Install Samba
+  ansible.builtin.package:
+    name: samba
+    state: present
+
+- name: Enable smb and nmb services
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop:
+    - smb
+    - nmb
+
+- name: Enable firewall rules for samba
+  ansible.builtin.firewalld:
+    service: samba
+    permanent: true
+    state: enabled
