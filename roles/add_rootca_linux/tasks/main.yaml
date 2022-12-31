@@ -1,0 +1,9 @@
+---
+- name: Create root ca on host
+  ansible.builtin.template:
+    src: Homelab_local.lan_Root_CA.crt.j2
+    dest: /etc/pki/ca-trust/source/anchors/Homelab_local.lan_Root_CA.crt
+
+- name: Update cert trust
+  ansible.builtin.shell:
+    cmd: update-ca-trust
