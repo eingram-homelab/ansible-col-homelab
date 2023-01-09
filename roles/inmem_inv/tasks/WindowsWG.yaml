@@ -1,0 +1,15 @@
+---
+- name: Create in memory inventory
+  add_host:
+    name: "{{ inmem_item }}.{{ dns_suffix_list[0] }}"
+    groups: temp_group
+    ansible_user: "{{ inmem_user | default('eingram')}}"
+    ansible_become_user: "{{ inmem_user | default('eingram')}}"
+    ansible_password: "{{ lookup('hashi_vault', 'secret=secret/ssh/eingram:ssh_password') }}"
+    ansible_connection: winrm
+    ansible_port: 5985
+    ansible_winrm_transport: basic
+    ansible_winrm_server_cert_validation: ignore
+  loop: "{{ vm_name_list }}"
+  loop_control:
+    loop_var: inmem_item
