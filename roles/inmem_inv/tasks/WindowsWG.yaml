@@ -3,8 +3,8 @@
   add_host:
     name: "{{ inmem_item }}.{{ dns_suffix_list[0] }}"
     groups: temp_group
-    ansible_user: "{{ inmem_user | default('eingram')}}"
-    ansible_become_user: "{{ inmem_user | default('eingram')}}"
+    ansible_user: "{{ inmem_user | default('ansible')}}"
+    ansible_become_user: "{{ inmem_user | default('ansible')}}"
     ansible_password: "{{ lookup('hashi_vault', 'secret=secret/ssh/eingram:ssh_password') }}"
     ansible_connection: winrm
     ansible_port: 5985
