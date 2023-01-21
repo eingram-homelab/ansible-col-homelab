@@ -5,7 +5,7 @@
     state: installed
   loop:
     - python3
-    - pip
+    # - pip
     - yum-utils
     - zip
     - git
