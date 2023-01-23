@@ -5,13 +5,18 @@
     state: installed
   loop:
     - python3
-    # - pip
     - yum-utils
     - zip
     - git
     - bind-utils
   loop_control:
     loop_var: core_pkg_item
+
+- name: Install pip (rhel/rocky9)
+  ansible.builtin.package:
+    name: pip
+    state: installed
+  when: ansible_facts['distribution_major_version'] == '9'
 
 - block:
     - name: Enable powertools on rocky
