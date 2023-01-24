@@ -5,10 +5,13 @@
     state: present
     disable_gpg_check: true
 
-- name: Instal epel-release
+- name: Instal epel-release and usbutils
   ansible.builtin.dnf:
-    name: epel-release
+    name: "{{ item }}"
     state: present
+  loop:
+    - epel-release
+    - usbutils
 
 - name: Install DKMS package
   ansible.builtin.dnf:
