@@ -18,3 +18,8 @@
     service: samba
     permanent: true
     state: enabled
+
+- name: Add shareaccess user
+  ansible.builtin.user:
+    name: shareaccess
+    password: $6$CRvGabIziUpx7Z5H$8dF37lNx/1d/e4XOvWjzQFkmJjBoLMNOI6M7ADKfCssptb/EI.k1IrTWz3gVj/El.1RfqLcGkrd3w0kZ7T/KM0
