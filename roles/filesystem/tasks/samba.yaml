@@ -18,8 +18,17 @@
     service: samba
     permanent: true
     state: enabled
+  notify: Reloead firewalld
 
 - name: Add shareaccess user
   ansible.builtin.user:
     name: shareaccess
     password: $6$CRvGabIziUpx7Z5H$8dF37lNx/1d/e4XOvWjzQFkmJjBoLMNOI6M7ADKfCssptb/EI.k1IrTWz3gVj/El.1RfqLcGkrd3w0kZ7T/KM0
+
+- name: Add smb.conf
+  ansible.builtin.copy:
+    src: smb.conf
+    dest: /etc/samba
+    backup: true
+    mode: '0644'
+  notify: Reload smb
