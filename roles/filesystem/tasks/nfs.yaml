@@ -14,7 +14,7 @@
     - nfs3
     - mountd
     - rpc-bind
-  notify: Reload firewalld
+  notify: Restart firewalld
 
 - name: Install nfs and rpcbind services
   ansible.builtin.service:

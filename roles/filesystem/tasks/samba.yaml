@@ -18,16 +18,31 @@
     service: samba
     permanent: true
     state: enabled
-  notify: Reloead firewalld
+  notify: Restart firewalld
 
 - name: Add shareaccess user
   ansible.builtin.user:
     name: shareaccess
     password: $6$CRvGabIziUpx7Z5H$8dF37lNx/1d/e4XOvWjzQFkmJjBoLMNOI6M7ADKfCssptb/EI.k1IrTWz3gVj/El.1RfqLcGkrd3w0kZ7T/KM0
 
+- name: Add eingram user to shareaccess group
+  ansible.builtin.user:
+    name: eingram
+    groups: shareaccess
+    append: true
+    
+- name: Allow samba shares with selinux
+  community.general.sefcontext:
+    target: '/mnt/pool0(/.*)?'
+    setype: samba_share_t
+    state: present
+
+- name: Apply new SELinux file context to filesystem
+  ansible.builtin.command: restorecon -R /mnt/pool0
+
 - name: Add smb.conf
   ansible.builtin.copy:
-    src: smb.conf
+    src: smb.confls
     dest: /etc/samba
     backup: true
     mode: '0644'

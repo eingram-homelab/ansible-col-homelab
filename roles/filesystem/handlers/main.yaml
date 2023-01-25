@@ -9,7 +9,7 @@
     name: smb
     state: reloaded
 
-- name: Reload firewalld
+- name: Restart firewalld
   ansible.builtin.systemd:
     name: firewalld
     state: restarted
