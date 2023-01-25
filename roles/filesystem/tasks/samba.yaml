@@ -25,10 +25,16 @@
     name: shareaccess
     password: $6$CRvGabIziUpx7Z5H$8dF37lNx/1d/e4XOvWjzQFkmJjBoLMNOI6M7ADKfCssptb/EI.k1IrTWz3gVj/El.1RfqLcGkrd3w0kZ7T/KM0
 
-- name: Add eingram user to shareaccess group
+- name: Add eingram user to shareaccess group (for access to Shared)
   ansible.builtin.user:
     name: eingram
     groups: shareaccess
+    append: true
+
+- name: Add eingram user to poduser group (for access to PlexMedia)
+  ansible.builtin.user:
+    name: eingram
+    groups: poduser
     append: true
     
 - name: Allow samba shares with selinux
