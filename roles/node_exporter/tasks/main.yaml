@@ -1,0 +1,42 @@
+---
+- name: Add node_exporter user
+  ansible.builtin.user:
+    name: node_exporter
+    shell: /bin/false
+    create_home: false
+    comment: Prometheus Node Exporter Service Account
+    state: present
+
+- name: Extract tar
+  ansible.builtin.unarchive:
+    src: https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_ver }}/node_exporter-{{ node_exporter_ver }}.linux-amd64.tar.gz
+    dest: ~/
+    remote_src: true
+
+- name: Copy node_exporter binaries to /usr/local/bin
+  ansible.builtin.copy:
+    src: ~/node_exporter-{{ node_exporter_ver }}.linux-amd64/node_exporter
+    dest: /usr/local/bin/node_exporter
+    remote_src: true
+    owner: node_exporter
+    group: node_exporter
+    mode: '0744'
+  notify: Restart node_exporter service
+
+- name: Create service file
+  ansible.builtin.copy:
+    src: node_exporter.service
+    dest: /etc/systemd/system/node_exporter.service
+
+- name: Start and enable node_exporter service
+  ansible.builtin.systemd:
+    name: node_exporter
+    state: started
+    enabled: true
+
+- name: Allow node_exporter through firewall
+  ansible.builtin.include_role:
+    name: eingram23.homelab.firewall
+  vars:
+    fw_port:
+      - "9100/tcp"

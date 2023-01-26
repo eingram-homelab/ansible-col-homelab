@@ -1,0 +1,24 @@
+---
+# vars file for install_windows_exporter
+win_exp_ver: 0.20.0
+collectors:
+  - cache
+  - cpu
+  - cpu_info
+  - cs
+  - dhcp
+  - dns
+  - iis
+  - logical_disk
+  - logon
+  - memory
+  - mssql
+  - os
+  - process
+  - system
+  - net
+  - service
+  - tcp
+  - time
+  - vmware
+log_level: warn

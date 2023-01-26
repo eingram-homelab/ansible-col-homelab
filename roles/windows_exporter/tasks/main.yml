@@ -1,0 +1,36 @@
+---
+# tasks file for install_windows_exporter
+- name: Prestage program folder
+  ansible.windows.win_file:
+    path: C:\Program Files\windows_exporter
+    state: directory
+
+- name: Use templating to create config file on remote host
+  ansible.builtin.template:
+    src: config.yml.j2
+    dest: C:\Program Files\windows_exporter\config.yml
+  notify:
+    - Restart windows_exporter
+
+- name: Make sure c:\temp exists
+  ansible.windows.win_file:
+    path: C:\temp
+    state: directory
+
+- name: Download windows exporter msi from github
+  ansible.windows.win_get_url:
+    url: https://github.com/prometheus-community/windows_exporter/releases/download/v{{ win_exp_ver }}/windows_exporter-{{ win_exp_ver }}-amd64.msi
+    dest: C:\temp\windows_exporter-{{ win_exp_ver }}-amd64.msi
+
+- name: Install windows_exporter
+  ansible.windows.win_package:
+    path: C:\temp\windows_exporter-{{ win_exp_ver }}-amd64.msi
+    product_id: '{344EDA7B-3B94-4E58-AD9C-BF019081C485}'
+    arguments: 'EXTRA_FLAGS="--config.file=""C:\Program Files\windows_exporter\config.yml"""'
+    state: present
+
+- name: Start windows_exporter service if not started and set to auto
+  ansible.windows.win_service:
+    name: windows_exporter
+    start_mode: auto
+    state: started
