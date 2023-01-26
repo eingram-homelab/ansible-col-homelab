@@ -30,3 +30,29 @@
   community.general.modprobe:
     name: zfs
     state: present
+
+- name: Force load of zfs module by systemd
+  ansible.builtin.copy:
+    src: zfs.conf
+    dest: /etc/modules-conf.d
+    mode: '0644'
+
+- name: Create zfs systemd override folder
+  ansible.builtin.file:
+    path: /etc/modules/conf.d/zfs-import-cache-service.d
+    state: directory
+    mode: '0751'
+
+- name: Copy zfs override file
+  ansible.builtin.copy:
+    src: zfs-override.conf
+    dest: /etc/modules/conf.d/zfs-import-cache-service.d/override.conf
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Reload zfs
+  ansible.builtin.systemd:
+    name: zfs-import-cache
+    state: restarted
