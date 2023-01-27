@@ -31,12 +31,6 @@
     groups: shareaccess
     append: true
 
-# - name: Add eingram user to poduser group (for access to PlexMedia)
-#   ansible.builtin.user:
-#     name: eingram
-#     groups: poduser
-#     append: true
-
 - name: Allow samba shares with selinux
   community.general.sefcontext:
     target: '/mnt/pool0(/.*)?'
@@ -45,10 +39,6 @@
 
 - name: Apply new SELinux file context to filesystem
   ansible.builtin.command: restorecon -R /mnt/pool0
-
-# - name: Disable SELinux
-#   ansible.posix.selinux:
-#     state: disabled
 
 - name: Add smb.conf
   ansible.builtin.copy:
