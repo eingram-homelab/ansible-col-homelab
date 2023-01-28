@@ -1,9 +1,14 @@
 ---
 - name: Install firewalld if needed
-  ansible.builtin.package: name=firewalld state=present
+  ansible.builtin.package: 
+    name: firewalld
+    state: present
 
 - name: start firewalld
-  ansible.builtin.service: name=firewalld state=started enabled=yes
+  ansible.builtin.service: 
+    name: firewalld
+    state: started
+    enabled: true
 
 - name: Create firewall rules
   ansible.posix.firewalld:
