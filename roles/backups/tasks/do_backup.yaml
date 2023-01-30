@@ -1,8 +1,14 @@
-- name: Create shared backup destination
-  ansible.builtin.file:
-    path: /home/app_backups
-    state: directory
-    mode: '0777'
+- block:
+    - name: Ensure rsync is installed
+      ansible.builtin.package:
+        name: rsync
+        state: present
+
+    - name: Create shared backup destination
+      ansible.builtin.file:
+        path: /home/app_backups
+        state: directory
+        mode: '0777'
   become: true
   become_method: sudo
   become_user: root
