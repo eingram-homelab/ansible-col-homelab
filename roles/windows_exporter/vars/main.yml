@@ -6,13 +6,13 @@ collectors:
   - cpu
   - cpu_info
   - cs
-  - dhcp
-  - dns
-  - iis
+  # - dhcp
+  # - dns
+  # - iis
   - logical_disk
   - logon
   - memory
-  - mssql
+  # - mssql
   - os
   - process
   - system
