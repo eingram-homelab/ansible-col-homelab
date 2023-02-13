@@ -3,6 +3,8 @@ collectors:
 collector:
   service:
     services-where: "Name='windows_exporter'"
+  process:
+    blacklist: "svchost|WmiPrvSE"
 log:
   level: {{ log_level }}
   

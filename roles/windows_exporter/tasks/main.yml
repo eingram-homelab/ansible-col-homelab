@@ -26,7 +26,7 @@
   ansible.windows.win_package:
     path: C:\temp\windows_exporter-{{ win_exp_ver }}-amd64.msi
     product_id: '{344EDA7B-3B94-4E58-AD9C-BF019081C485}'
-    arguments: 'EXTRA_FLAGS="--collector.process.blacklist="svchost|WmiPrvSE" --config.file=""C:\Program Files\windows_exporter\config.yml"""'
+    arguments: 'EXTRA_FLAGS="--config.file=""C:\Program Files\windows_exporter\config.yml"""'
     state: present
 
 - name: Start windows_exporter service if not started and set to auto
