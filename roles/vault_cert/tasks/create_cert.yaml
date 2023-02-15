@@ -13,15 +13,3 @@
     validate_certs: false
   register: cert_data
   delegate_to: localhost
-
-- name: Display cert
-  ansible.builtin.debug:
-    var: cert_data.data.data.certificate
-
-- name: Display cert
-  ansible.builtin.debug:
-    var: cert_data.data.data.ca_chain
-
-- name: Display key
-  ansible.builtin.debug:
-    var: cert_data.data.data.private_key
