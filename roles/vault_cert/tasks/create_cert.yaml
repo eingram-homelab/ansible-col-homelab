@@ -2,6 +2,8 @@
   community.hashi_vault.vault_pki_generate_certificate:
     role_name: "{{ vault_role }}"
     common_name: "{{ common_name }}"
+    alt_names:
+      - "{{ common_name }}"
     ttl: "{{ ttl }}"
     url: https://vault.local.lan/
     engine_mount_point: pki_int
