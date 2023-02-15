@@ -1,0 +1,21 @@
+- name: Generate a certificate with an existing token
+  community.hashi_vault.vault_pki_generate_certificate:
+    role_name: "{{ vault_role }}"
+    common_name: "{{ common_name }}"
+    ttl: "{{ ttl }}"
+    url: https://vault.local.lan/
+    engine_mount_point: pki_int
+    auth_method: userpass
+    username: "eingram"
+    password: "{{ lookup('hashi_vault', 'secret=secret/ssh/eingram:ssh_password') }}"
+    validate_certs: false
+  register: cert_data
+  delegate_to: localhost
+
+- name: Display cert
+  ansible.builtin.debug:
+    var: cert_data.data.data.certificate
+
+- name: Display key
+  ansible.builtin.debug:
+    var: cert_data.data.data.private_key
