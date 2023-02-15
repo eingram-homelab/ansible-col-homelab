@@ -13,3 +13,11 @@
     validate_certs: false
   register: cert_data
   delegate_to: localhost
+
+- name: Display cert info
+  ansible.builtin.debug:
+    var: cert_data.data.data[item]
+  loop:
+    - certificate
+    - issuing_ca
+    - private_key
