@@ -13,6 +13,7 @@
     validate_certs: false
   register: cert_data
   delegate_to: localhost
+  become: false
 
 - name: Display cert info
   ansible.builtin.debug:
