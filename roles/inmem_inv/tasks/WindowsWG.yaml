@@ -5,7 +5,7 @@
     groups: temp_group
     ansible_user: "{{ inmem_user | default('ansible')}}"
     ansible_become_user: "{{ inmem_user | default('ansible')}}"
-    ansible_password: "{{ lookup('hashi_vault', 'secret=secret/ssh/eingram:ssh_password') }}"
+    ansible_password: "{{ lookup('hashi_vault', 'secret=secret/win/administrator:win_password') }}"
     ansible_connection: winrm
     ansible_port: 5985
     ansible_winrm_transport: basic
