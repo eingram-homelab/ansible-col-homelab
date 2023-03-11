@@ -5,8 +5,58 @@
     path: C:\Program Files\windows_exporter
     state: directory
 
+- name: Check if server is a DC
+  ansible.windows.win_service:
+    name: NTDS
+  register: dc_enabled
+
+- name: Check if server is running SQL
+  ansible.windows.win_service:
+    name: SQLBrowser
+  register: sql_enabled
+
+- name: Check if server is running IIS
+  ansible.windows.win_service:
+    name: cluster
+  register: iis_enabled
+
+- name: Check if server is running WFCS
+  ansible.windows.win_service:
+    name: ClusSvc
+  register: wfcs_enabled
+
+- name: Check if server is running VMWare Tools
+  ansible.windows.win_service:
+    name: VMTools
+  register: vmtools_enabled
+
+- name: Add collectors for DC
+  ansible.builtin.set_fact:
+    collectors: "{{ collectors + ['dhcp', 'dns'] }}"
+  when: dc_enabled is defined
+
+- name: Add collectors for SQL
+  ansible.builtin.set_fact:
+    collectors: "{{ collectors + ['mssql'] }}"
+  when: sql_enabled is defined
+
+- name: Add collectors for IIS
+  ansible.builtin.set_fact:
+    collectors: "{{ collectors + ['iis'] }}"
+  when: iis_enabled is defined
+
+- name: Add collectors for WFCS
+  ansible.builtin.set_fact:
+    collectors: "{{ collectors + ['mscluster_cluster', 'mscluster_network', 'mscluster_node', 'mscluster_resource', 'mscluster_resourcegroup'] }}"
+  when: wfcs_enabled is defined
+
+- name: Add collectors for VMWare Tools
+  ansible.builtin.set_fact:
+    collectors: "{{ collectors + ['vmware'] }}"
+  when: iis_enabled is defined
+
 - name: Use templating to create config file on remote host
-  ansible.builtin.template:
+  ansible.builtin.copy:
     src: config.yml.j2
     dest: C:\Program Files\windows_exporter\config.yml
   notify:

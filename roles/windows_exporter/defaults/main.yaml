@@ -1,0 +1,19 @@
+collectors:
+  - cache
+  - cpu
+  - cpu_info
+  - cs
+  - logical_disk
+  - logon
+  - memory
+  - os
+  - process
+  - scheduled_task
+  - system
+  - net
+  - service
+  - tcp
+  - time
+services:
+processes:
+log_level: warn

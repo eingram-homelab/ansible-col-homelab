@@ -2,9 +2,9 @@ collectors:
   enabled: {{ collectors|join(',') }}
 collector:
   service:
-    services-where: "Name='windows_exporter'"
+    # services-where: "Name='windows_exporter'"
   process:
-    blacklist: "svchost|WmiPrvSE"
+    # blacklist: "svchost|WmiPrvSE"
 log:
   level: {{ log_level }}
   
