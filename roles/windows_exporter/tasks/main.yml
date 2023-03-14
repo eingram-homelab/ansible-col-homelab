@@ -53,7 +53,7 @@
 - name: Add collectors for VMWare Tools
   ansible.builtin.set_fact:
     collectors: "{{ collectors + ['vmware'] }}"
-  when: vmwtools.exists
+  when: vmtools.exists
 
 - name: Use templating to create config file on remote host
   ansible.builtin.template:
