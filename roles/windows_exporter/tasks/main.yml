@@ -56,7 +56,7 @@
   when: iis_enabled is defined
 
 - name: Use templating to create config file on remote host
-  ansible.builtin.copy:
+  ansible.builtin.template:
     src: config.yml.j2
     dest: C:\Program Files\windows_exporter\config.yml
   notify:
