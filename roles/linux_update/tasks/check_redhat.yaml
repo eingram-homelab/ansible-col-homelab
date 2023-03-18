@@ -10,3 +10,6 @@
 - name: Output list of updates
   ansible.builtin.debug:
     msg: "{{ yumoutput.results | map(attribute='name') | list }}"
+
+- ansible.builtin.debug:
+    var: yumoutput
