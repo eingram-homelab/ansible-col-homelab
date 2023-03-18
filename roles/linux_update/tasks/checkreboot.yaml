@@ -1,41 +1,42 @@
 ---
 - when: ansible_facts['distribution'] == 'CentOS'
   block:
-    - name: Check if reboot required 
+    - name: Check if reboot required
       command: needs-restarting -r
       register: reboot_required_centos
       ignore_errors: true
       failed_when: false
 
-    - name: Report if reboot required 
-      debug:  
+    - name: Report if reboot required
+      ansible.builtin.debug:
         msg: "Reboot required"
       when: reboot_required_centos.rc != 0
 
-- when: ansible_facts['distribution'] == 'RedHat' or 
+- when: ansible_facts['distribution'] == 'RedHat' or
         ansible_facts['distribution'] == 'Rocky'
   block:
-    - name: Check if reboot required 
-      command: needs-restarting -r
+    - name: Check if reboot required
+      ansible.builtin.command: needs-restarting -r
       register: reboot_required_rhel
       ignore_errors: true
       failed_when: false
 
-    - name: Report if reboot required 
-      debug:  
+    - name: Report if reboot required
+      ansible.builtin.debug:
         msg: "Reboot required"
       when: reboot_required_rhel.rc != 0
 
-- when: ansible_facts['distribution'] != 'CentOS' and 
+- when: ansible_facts['distribution'] != 'CentOS' and
         ansible_facts['distribution'] != 'RedHat' and
         ansible_facts['distribution'] != 'Rocky'
   block:
-    - name: Check if reboot required 
-      stat:
+    - name: Check if reboot required
+      ansible.builtin.stat:
         path: "/var/run/reboot-required"
-      register: reboot_required_ubdeb       
+      register: reboot_required_ubdeb
 
-    - name: Report if reboot required 
-      debug:
+    - name: Report if reboot required
+      ansible.builtin.debug:
         msg: "Reboot required"
       when: reboot_required_ubdeb.stat.exists
+  

@@ -1,0 +1,25 @@
+---
+- name: Update repo info and update installed packages
+  ansible.builtin.apt:
+    name: '*'
+    state: latest
+    update_cache: true
+    force_apt_get: true
+
+- name: Remove unneeded packages
+  ansible.builtin.apt:
+    autoremove: true
+
+- name: Check if reboot needed
+  ansible.builtin.include_role:
+    name: checkreboot
+
+- name: Reboot host
+  ansible.builtin.reboot:
+  when: reboot_required_ubdeb.stat.exists and
+        reboot == "y"
+
+- name: Remove unused kernels
+  ansible.builtin.shell: apt-get purge --autoremove -y
+  when: reboot_required_ubdeb.stat.exists and
+        reboot == "y"

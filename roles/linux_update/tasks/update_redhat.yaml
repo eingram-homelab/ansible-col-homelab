@@ -1,27 +1,28 @@
 ---
 - name: Install dnf-utils (if needed)
-  package:
+  ansible.builtin.package:
     name: dnf-utils
 
-- name: Update repo info and update installed packages 
-  dnf:
+- name: Update repo info and update installed packages
+  ansible.builtin.dnf:
     name: '*'
     state: latest
-    update_cache: yes
+    update_cache: true
 
 - name: Remove unneeded packages
-  dnf:
-    autoremove: yes
+  ansible.builtin.dnf:
+    autoremove: true
 
-- include_role:
+- name: Check of reboot needed
+  ansible.builtin.include_tasks:
     name: checkreboot
 
-- name: Reboot host 
-  reboot:
+- name: Reboot host
+  ansible.builtin.reboot:
   when: reboot_required_rhel.rc != 0 and
         reboot == "y"
 
-- name: Remove unused kernels 
+- name: Remove unused kernels
   shell: dnf remove --oldinstallonly -y
   when: reboot_required_rhel.rc != 0 and
         reboot == "y"
