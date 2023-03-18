@@ -1,5 +1,5 @@
 ---
-- when: ansible_facts['distribution'] == 'CentOS'
+- when: ansible_distribution == 'CentOS'
   block:
     - name: Check if reboot required
       command: needs-restarting -r
@@ -12,8 +12,8 @@
         msg: "Reboot required"
       when: reboot_required_centos.rc != 0
 
-- when: ansible_facts['distribution'] == 'RedHat' or
-        ansible_facts['distribution'] == 'Rocky'
+- when: ansible_distribution == 'RedHat' or
+        ansible_distribution == 'Rocky'
   block:
     - name: Check if reboot required
       ansible.builtin.command: needs-restarting -r
@@ -26,9 +26,9 @@
         msg: "Reboot required"
       when: reboot_required_rhel.rc != 0
 
-- when: ansible_facts['distribution'] != 'CentOS' and
-        ansible_facts['distribution'] != 'RedHat' and
-        ansible_facts['distribution'] != 'Rocky'
+- when: ansible_distribution != 'CentOS' and
+        ansible_distribution != 'RedHat' and
+        ansible_distribution != 'Rocky'
   block:
     - name: Check if reboot required
       ansible.builtin.stat:

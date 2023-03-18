@@ -1,0 +1,12 @@
+---
+- name: Update apt cache with latest updates
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Check updates
+  ansible.builtin.command: apt list --upgradable
+  register: updates
+
+- name: Output list of updates
+  ansible.builtin.debug:
+    var: updates.stdout_lines
