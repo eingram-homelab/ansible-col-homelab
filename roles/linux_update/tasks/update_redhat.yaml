@@ -20,9 +20,9 @@
 - name: Reboot host
   ansible.builtin.reboot:
   when: reboot_required_rhel.rc != 0 and
-        reboot == "y"
+        reboot == "yes"
 
 - name: Remove unused kernels
   shell: dnf remove --oldinstallonly -y
   when: reboot_required_rhel.rc != 0 and
-        reboot == "y"
+        reboot == "yes"

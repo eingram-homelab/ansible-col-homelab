@@ -20,9 +20,9 @@
 - name: Reboot host
   ansible.builtin.reboot:
   when: reboot_required_centos.rc != 0 and
-        reboot == "y"
+        reboot == "yes"
 
 - name: Remove unused kernels
   ansible.builtin.shell: package-cleanup --oldkernels -y
   when: reboot_required_centos.rc != 0 and
-        reboot == "y"
+        reboot == "yes"

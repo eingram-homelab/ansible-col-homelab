@@ -39,4 +39,4 @@
       ansible.builtin.debug:
         msg: "Reboot required"
       when: reboot_required_ubdeb.stat.exists
-  
+
