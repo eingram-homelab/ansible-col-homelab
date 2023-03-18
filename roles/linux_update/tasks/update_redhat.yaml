@@ -13,9 +13,9 @@
   ansible.builtin.dnf:
     autoremove: true
 
-- name: Check of reboot needed
+- name: Check if reboot needed
   ansible.builtin.include_tasks:
-    name: checkreboot
+    name: checkreboot.yaml
 
 - name: Reboot host
   ansible.builtin.reboot:

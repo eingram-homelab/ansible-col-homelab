@@ -11,8 +11,8 @@
     autoremove: true
 
 - name: Check if reboot needed
-  ansible.builtin.include_role:
-    name: checkreboot
+  ansible.builtin.include_tasks:
+    name: checkreboot.yaml
 
 - name: Reboot host
   ansible.builtin.reboot:
