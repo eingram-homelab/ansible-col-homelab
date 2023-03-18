@@ -12,7 +12,7 @@
 
 - name: Check if reboot needed
   ansible.builtin.include_tasks:
-    name: checkreboot.yaml
+    file: checkreboot.yaml
 
 - name: Reboot host
   ansible.builtin.reboot:
