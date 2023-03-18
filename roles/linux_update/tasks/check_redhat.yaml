@@ -1,13 +1,12 @@
 ---
 - name: Check for updates using yum
-  ansible.builtin.yum: 
-    list: updates 
+  ansible.builtin.yum:
+    list: updates
     update_cache: true
   register: yumoutput
-  when: ansible_distribution == 'Rocky' or 
+  when: ansible_distribution == 'Rocky' or
         ansible_distribution == 'Red Hat Enterprise Linux'
 
 - name: Output list of updates
-  ansible.builtin.debug: 
-    var: yumoutput
-  msg: "{{ yumoutput.results | map(attribute='name') | list }}
+  ansible.builtin.debug:
+    msg: "{{ yumoutput.results | map(attribute='name') | list }}"
