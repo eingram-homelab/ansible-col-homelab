@@ -1,4 +1,4 @@
-- name: Create var from file
+- name: Create script content from file
   set_fact:
     script_to_run: "{{ lookup( 'file', script ) }}"
 
