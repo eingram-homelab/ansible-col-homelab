@@ -2,9 +2,8 @@
   set_fact:
     script: "{{ lookup( 'file', 'list_volumes.ps1' ) }}"
 
-- name: Run powershell script on host
-  ansible.windows.win_powershell:
-    script: |
+- name: Run script on host
+  ansible.windows.win_shell: |
       {{ script }}
   register: output
 
