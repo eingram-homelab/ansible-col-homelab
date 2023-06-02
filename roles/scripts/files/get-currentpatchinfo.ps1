@@ -130,5 +130,3 @@ $Table = New-Object System.Data.DataTable
     "https://support.microsoft.com" + $LatestAvailablePatch.href
     )
 Return $Table
-
-Get-CurrentPathInfo 

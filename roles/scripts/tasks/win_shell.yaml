@@ -4,7 +4,7 @@
 
 - name: Run script on host
   ansible.windows.win_shell: |
-      {{ script_to_run }}
+      {{ script_to_run }} {{ param }}
   register: output
 
 - ansible.builtin.debug:
