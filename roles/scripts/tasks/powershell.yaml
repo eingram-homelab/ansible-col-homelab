@@ -1,0 +1,9 @@
+- name: Create var from file
+  set_fact:
+    script: "{{ lookup( 'file', list_volumes.ps1 ) }}"
+
+- name: Run powershell scrip on host
+  ansible.windows.win_powershell:
+    script: |
+      {{ script }}
+    
