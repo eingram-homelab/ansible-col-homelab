@@ -10,3 +10,5 @@
 - ansible.builtin.debug:
     var: output.stdout_lines
     
+- ansible.builtin.debug:
+    var: output.stderr
