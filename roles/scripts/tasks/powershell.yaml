@@ -9,5 +9,5 @@
   register: output
 
 - ansible.builtin.debug:
-    var: output
+    var: output.stdout
     
