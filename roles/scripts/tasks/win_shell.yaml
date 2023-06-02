@@ -7,8 +7,10 @@
       {{ script_to_run }} {{ param }}
   register: output
 
-- ansible.builtin.debug:
+- name: Script output 
+  ansible.builtin.debug:
     var: output.stdout_lines
     
-- ansible.builtin.debug:
+- name: Script error
+  ansible.builtin.debug:
     var: output.stderr
