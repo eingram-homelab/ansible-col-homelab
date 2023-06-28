@@ -1,1 +1,1 @@
-Get-Disk –number 0 | Get-Partition | Get-Volume
+Get-Disk -number 0 | Get-Partition | Get-Volume
