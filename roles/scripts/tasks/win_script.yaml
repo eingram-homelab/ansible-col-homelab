@@ -29,7 +29,7 @@
         description: Run a PowerShell script
         actions:
           - path: powershell.exe
-            arguments: -File C:\temp\{{ script }} {{ param }}
+            arguments: -File C:\temp\{{ script }} {{ param }} > c:\temp\script_output.txt
           - path: cmd.exe
             arguments: /c schtasks.exe /Delete /TN "ansible_script_task" /F
         triggers:
