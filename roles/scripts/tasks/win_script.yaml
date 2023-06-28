@@ -58,7 +58,7 @@
         src: c:\temp\script_err_output.txt
       register: err_output_encoded
 
-    - name: Set fact with std err output
+    - name: Display err output
       ansible.builtin.set_fact:
         err_output: "{{ err_output_encoded.content | b64decode }}"
       failed_when: err_output != ""
@@ -67,11 +67,6 @@
     - name: Display output
       ansible.builtin.debug:
         var: output
-    
-    - name: Display error output
-      ansible.builtin.debug:
-        var: err_output
-      when: err_output != ""
 
 - name: Clean up script
   ansible.windows.win_file:
