@@ -37,15 +37,12 @@
         username: SYSTEM
 
     - name: Wait for script to complete
-      community.windows.win_scheduled_task:
+      community.windows.win_scheduled_task_stat:
         name: ansible_script_task
       register: task_stat
-      # until: (task_stat.state is defined and task_stat.state.status != "TASK_STATE_RUNNING") or (task_stat.exists == False)
+      until: (task_stat.state is defined and task_stat.state.status != "TASK_STATE_RUNNING") or (task_stat.exists == False)
       retries: 24
       delay: 10
-    
-    - ansible.builtin.debug:
-        var: task_stat
 
 - name: Clean up script
   ansible.windows.win_file:
