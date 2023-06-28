@@ -43,7 +43,28 @@
       until: (task_stat.state is defined and task_stat.state.status != "TASK_STATE_RUNNING") or (task_stat.task_exists == False)
       retries: 24
       delay: 10
+    
+    - name: Read std output
+      ansible.builtin.slurp:
+        src: c:\temp\script_output.txt
+      register: output
 
+    - name: Read std error output
+      ansible.builtin.slurp:
+        src: c:\temp\script_err_output.txt
+      register: err_output
+      failed_when: err_output != ""
+      ignore_errors: true
+      
+    - name: Display output
+      ansible.builtin.debug:
+        var: output
+    
+    - name: Display error output
+      ansible.builtin.debug:
+        var: err_output
+      when: err_output != ""
+      
 - name: Clean up script
   ansible.windows.win_file:
     path: c:\temp\{{ script }}
