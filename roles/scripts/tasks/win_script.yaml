@@ -47,15 +47,23 @@
     - name: Read std output
       ansible.builtin.slurp:
         src: c:\temp\script_output.txt
-      register: output
+      register: output_encoded
+    
+    - name: Set fact with std output
+      ansible.builtin.set_fact:
+        output: "{{ output_encoded.content | b64decode }}"
 
     - name: Read std error output
       ansible.builtin.slurp:
         src: c:\temp\script_err_output.txt
-      register: err_output
+      register: err_output_encoded
+
+    - name: Set fact with std err output
+      ansible.builtin.set_fact:
+        err_output: "{{ err_output_encoded.content | b64decode }}"
       failed_when: err_output != ""
       ignore_errors: true
-      
+
     - name: Display output
       ansible.builtin.debug:
         var: output
@@ -64,7 +72,7 @@
       ansible.builtin.debug:
         var: err_output
       when: err_output != ""
-      
+
 - name: Clean up script
   ansible.windows.win_file:
     path: c:\temp\{{ script }}
