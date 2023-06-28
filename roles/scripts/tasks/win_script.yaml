@@ -9,16 +9,18 @@
     - name: Run script on host
       ansible.windows.win_shell: c:\temp\{{ script }} {{ param }}
       register: output
-      failed_when: output.stderr != ""
-      ignore_errors: true
 
-    - name: Script output
+    - name: Show script output
       ansible.builtin.debug:
         var: output.stdout_lines
 
-    - name: Script error
+    - name: Show script error
       ansible.builtin.debug:
         var: output.stderr
+
+    - name: Set fact with script error
+      ansible.builtin.set_fact:
+        err_output: "{{ output.stderr }}"
 
 - name: Run script via scheduled task
   when: scheduled_task == "yes"
