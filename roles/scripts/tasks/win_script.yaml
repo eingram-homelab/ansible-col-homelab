@@ -28,8 +28,8 @@
         name: ansible_script_task
         description: Run a PowerShell script
         actions:
-          - path: powershell.exe
-            arguments: -File C:\temp\{{ script }} {{ param }} > c:\temp\script_output.txt
+          - path: cmd.exe
+            arguments: powershell.exe -File C:\temp\{{ script }} {{ param }} > c:\temp\script_output.txt
           - path: cmd.exe
             arguments: /c schtasks.exe /Delete /TN "ansible_script_task" /F
         triggers:
