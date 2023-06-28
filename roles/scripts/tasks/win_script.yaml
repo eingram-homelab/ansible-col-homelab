@@ -1,0 +1,50 @@
+- name: Copy script to host
+  ansible.windows.win_copy:
+    src: "{{ script }}"
+    dest: c:\temp\
+
+- name: Run script via win_shell
+  when: scheduled_task == "no"
+  block:
+    - name: Run script on host
+      ansible.windows.win_shell: c:\temp\{{ script }} {{ param }}
+      register: output
+      failed_when: output.stderr != ""
+      ignore_errors: true
+
+    - name: Script output
+      ansible.builtin.debug:
+        var: output.stdout_lines
+
+    - name: Script error
+      ansible.builtin.debug:
+        var: output.stderr
+
+- name: Run script via scheduled task
+  when: scheduled_task == "yes"
+  block:
+    - name: Create task to run a PS script
+      community.windows.win_scheduled_task:
+        name: ansible_script_task
+        description: Run a PowerShell script
+        actions:
+          - path: powershell.exe
+            arguments: -File C:\temp\{{ script }} {{ param }}
+          - path: cmd.exe
+            arguments: /c schtasks.exe /Delete /TN "ansible_script_task" /F
+        triggers:
+          - type: registration
+        username: SYSTEM
+
+    - name: Wait for script to complete
+      community.windows.win_scheduled_task:
+        name: ansible_script_task
+      register: task_stat
+      until: (task_stat.state is defined and task_stat.state.status != "TASK_STATE_RUNNING") or (task_stat.task_exists == False)
+      retries: 24
+      delay: 10
+
+- name: Clean up script
+  ansible.windows.win_file:
+    path: c:\temp\{{ script }}
+    state: absent
