@@ -61,14 +61,23 @@
     - name: Display err output
       ansible.builtin.set_fact:
         err_output: "{{ err_output_encoded.content | b64decode }}"
-      failed_when: err_output != ""
-      ignore_errors: true
 
     - name: Display output
       ansible.builtin.debug:
         var: output
 
+    - name: Clean up output files
+      ansible.windows.win_file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - c:\temp\script_output.txt
+        - c:\temp\script_err_output.txt
+
 - name: Clean up script
   ansible.windows.win_file:
     path: c:\temp\{{ script }}
     state: absent
+
+- ansible.builtin.fail:
+  when: err_output != ""
