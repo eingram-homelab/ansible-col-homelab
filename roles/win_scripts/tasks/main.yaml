@@ -1,0 +1,32 @@
+- name: Copy script to host
+  ansible.windows.win_copy:
+    src: "{{ role_path }}/files/{{ category }}/{{ script }}"
+    dest: c:\temp\
+
+- name: Run script via win_shell
+  when: not schtask
+  block:
+    - name: Run script on host
+      ansible.windows.win_shell: c:\temp\{{ script }} {{ param }}
+      register: output
+      ignore_errors: true
+
+    - name: Show script output
+      ansible.builtin.debug:
+        var: output.stdout_lines
+      when: output is defined
+
+    - name: Show script error
+      ansible.builtin.debug:
+        var: output.stderr
+      when: output is defined and output.stderr != ""
+
+- name: Run script via scheduled task
+  ansible.builtin.include_role:
+    name: win_schtasks
+  when: schtask
+
+- name: Clean up script
+  ansible.windows.win_file:
+    path: c:\temp\{{ script }}
+    state: absent
