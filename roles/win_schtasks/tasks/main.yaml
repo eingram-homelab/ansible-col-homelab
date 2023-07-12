@@ -71,5 +71,5 @@
         - c:\temp\{{ script }}_err_output.txt
   ignore_errors: true
 
-
-
+- ansible.builtin.fail:
+  when: err_output != ""

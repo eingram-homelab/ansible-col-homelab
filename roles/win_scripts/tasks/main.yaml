@@ -30,3 +30,6 @@
   ansible.windows.win_file:
     path: c:\temp\{{ script }}
     state: absent
+
+- ansible.builtin.fail:
+  when: output is defined and output.stderr != ""
