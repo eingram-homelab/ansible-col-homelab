@@ -24,7 +24,7 @@
         arguments: /c schtasks.exe /Delete /TN "ansible_script_task" /F
     triggers:
       - type: registration
-  when: schtask_sysuser = "off"
+  when: schtask_sysuser == "off"
 
 - name: Wait for script to complete
   win_scheduled_task_stat:
