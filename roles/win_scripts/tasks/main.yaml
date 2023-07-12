@@ -32,4 +32,4 @@
     state: absent
 
 - ansible.builtin.fail:
-  when: output is defined and output.stderr != ""
+  when: schtask == "disabled" and output is defined and output.stderr != ""
