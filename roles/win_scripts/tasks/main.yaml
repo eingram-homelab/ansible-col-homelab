@@ -4,7 +4,7 @@
     dest: c:\temp\
 
 - name: Run script via win_shell
-  when: schtask == "off"
+  when: schtask == "disabled"
   block:
     - name: Run script on host
       ansible.windows.win_shell: c:\temp\{{ script }} {{ param }}
@@ -24,7 +24,7 @@
 - name: Run script via scheduled task
   ansible.builtin.include_role:
     name: win_schtasks
-  when: schtask == "on"
+  when: schtask == "enabled"
 
 - name: Clean up script
   ansible.windows.win_file:

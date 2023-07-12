@@ -11,7 +11,7 @@
     triggers:
       - type: registration
     username: SYSTEM
-  when: schtask_sysuser == "on"
+  when: schtask_sysuser == "enabled"
 
 - name: Create task to run a PS script (Service Account)
   win_scheduled_task:
@@ -24,14 +24,14 @@
         arguments: /c schtasks.exe /Delete /TN "ansible_script_task" /F
     triggers:
       - type: registration
-  when: schtask_sysuser == "off"
+  when: schtask_sysuser == "disabled"
 
 - name: Wait for script to complete
   win_scheduled_task_stat:
     name: ansible_script_task
   register: task_stat
   until: (task_stat.state is defined and task_stat.state.status != "TASK_STATE_RUNNING") or (task_stat.task_exists == False)
-  retries: "{{ retry_val }}"
+  retries: "{{ retries }}"
   delay: 10
 
 - name: Output handling
