@@ -31,7 +31,7 @@
     name: ansible_script_task
   register: task_stat
   until: (task_stat.state is defined and task_stat.state.status != "TASK_STATE_RUNNING") or (task_stat.task_exists == False)
-  retries: "{{ retries }}"
+  retries: "{{ retry_val }}"
   delay: 10
 
 - name: Output handling
