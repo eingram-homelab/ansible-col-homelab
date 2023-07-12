@@ -1,3 +1,3 @@
 ---
 retries: 60
-schtask_sysuser: yes
+schtask_sysuser: true
