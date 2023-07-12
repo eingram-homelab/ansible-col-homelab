@@ -22,8 +22,10 @@
         arguments: /c powershell.exe -File C:\temp\{{ script }} > c:\temp\{{ script }}_output.txt 2>c:\temp\{{ script }}_err_output.txt
       # - path: cmd.exe
       #   arguments: /c schtasks.exe /Delete /TN "ansible_script_task" /F
+    restart_count: 1
     triggers:
       - type: registration
+      - delay: 30
   when: schtask_sysuser == "disabled"
 
 - name: Wait for script to complete
