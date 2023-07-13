@@ -5,4 +5,4 @@ $TaskSequencePolicy = Get-WmiObject -Namespace "root\ccm\policy\machine\actualco
 $TaskSequencePolicy.ADV_MandatoryAssignments = $true
 $TaskSequencePolicy.Put()
 
-Invoke-Method -Namespace "root\ccm" -Class "SMS_Client" -Name "TriggerSchedule" -ArgumentList $ScheduleID
+Invoke-WmiMethod -Namespace "root\ccm" -Class "SMS_Client" -Name "TriggerSchedule" -ArgumentList $ScheduleID
