@@ -3,6 +3,9 @@
     src: "{{ role_path }}/files/{{ category }}/{{ script }}"
     dest: c:\temp\
 
+- ansible.builtin.debug:
+    var: script[-3]
+    
 - name: Run script via win_shell
   when: schtask == "disabled"
   block:
@@ -11,7 +14,7 @@
       register: output
       ignore_errors: true
       when: script[-3] == "ps1"
-      
+
     - name: Run vbscript on host
       ansible.windows.win_shell: c:\temp\cscript.exe {{ script }} {{ param }}
       register: output
