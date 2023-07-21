@@ -13,9 +13,7 @@
       when: script[-3:] == "ps1"
 
     - name: Run vbscript on host
-      ansible.windows.win_shell: c:\temp\{{ script }} {{ param }}
-      args:
-        executable: cscript.exe
+      ansible.windows.win_shell: cscript.exe c:\temp\{{ script }} {{ param }}
       register: output
       ignore_errors: true
       when: script[-3:] == "vbs"
