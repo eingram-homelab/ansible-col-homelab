@@ -1,5 +1,2 @@
 ---
-param: ""
 schtask: "disabled"
-schtask_sysuser: "disabled"
-retries: 60

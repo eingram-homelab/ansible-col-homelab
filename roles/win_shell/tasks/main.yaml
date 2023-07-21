@@ -1,0 +1,57 @@
+- name: Powershell script
+  when: script[-3:] == "ps1"
+  block:
+    - name: Run powershell script on host
+      ansible.windows.win_shell: c:\temp\{{ script }} {{ param }}
+      register: ps1_output
+      ignore_errors: true
+
+    - name: Show script output
+      ansible.builtin.debug:
+        var: ps1_output.stdout_lines
+      when: ps1_output is defined
+
+    - name: Show script error
+      ansible.builtin.debug:
+        var: ps1_output.stderr
+      when: ps1_output.stderr is defined and ps1_output.stderr != ""
+
+- name: VBscript
+  when: script[-3:] == "vbs"
+  block:
+    - name: Run vbscript on host
+      ansible.windows.win_shell: cscript.exe c:\temp\{{ script }} {{ param }}
+      register: vbs_output
+      ignore_errors: true
+      when: script[-3:] == "vbs"
+
+    - name: Show script output
+      ansible.builtin.debug:
+        var: vbs_output.stdout_lines
+      when: vbs_output is defined
+
+    - name: Show script error
+      ansible.builtin.debug:
+        var: vbs_output.stderr
+      when: vbs_output.stderr is defined and vbs_output.stderr != ""
+
+- name: Batch file
+  when: script[-3:] == "bat"
+  block:
+    - name: Run batch file on host
+      ansible.windows.win_shell: c:\temp\{{ script }} {{ param }}
+      args:
+        executable: cmd.exe
+      register: bat_output
+      ignore_errors: true
+      when: script[-3:] == "bat"
+
+    - name: Show script output
+      ansible.builtin.debug:
+        var: bat_output.stdout_lines
+      when: bat_output is defined
+
+    - name: Show script error
+      ansible.builtin.debug:
+        var: bat_output.stderr
+      when: bat_output.stderr is defined and bat_output.stderr != ""
