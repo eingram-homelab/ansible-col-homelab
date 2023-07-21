@@ -6,10 +6,17 @@
 - name: Run script via win_shell
   when: schtask == "disabled"
   block:
-    - name: Run script on host
+    - name: Run powershell script on host
       ansible.windows.win_shell: c:\temp\{{ script }} {{ param }}
       register: output
       ignore_errors: true
+      when: script[-3] == "ps1"
+      
+    - name: Run vbscript on host
+      ansible.windows.win_shell: c:\temp\cscript.exe {{ script }} {{ param }}
+      register: output
+      ignore_errors: true
+      when: script[-3] == "vbs"
 
     - name: Show script output
       ansible.builtin.debug:
