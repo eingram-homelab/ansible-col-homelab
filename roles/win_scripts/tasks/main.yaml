@@ -62,7 +62,7 @@
         - name: Show script error
           ansible.builtin.debug:
             var: bat_output.stderr
-          when: bat_output.stderr is defined and vbs_output.stderr != ""
+          when: bat_output.stderr is defined and bat_output.stderr != ""
 
 - name: Run script via scheduled task
   ansible.builtin.include_role:
