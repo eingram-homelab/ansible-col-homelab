@@ -73,6 +73,3 @@
   ansible.windows.win_file:
     path: c:\temp\{{ script }}
     state: absent
-
-- ansible.builtin.fail:
-  when: schtask == "disabled" and output is defined and output.stderr != ""
