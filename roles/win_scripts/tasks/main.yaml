@@ -10,13 +10,23 @@
       ansible.windows.win_shell: c:\temp\{{ script }} {{ param }}
       register: output
       ignore_errors: true
-      when: script[-3:] == "ps1" or script[-3:] == "bat"
+      when: script[-3:] == "ps1"
 
     - name: Run vbscript on host
-      ansible.windows.win_shell: cscript.exe c:\temp\{{ script }} {{ param }}
+      ansible.windows.win_shell: c:\temp\{{ script }} {{ param }}
+      args:
+        executable: cscript.exe
       register: output
       ignore_errors: true
       when: script[-3:] == "vbs"
+
+    - name: Run batch file on host
+      ansible.windows.win_shell: c:\temp\{{ script }} {{ param }}
+      args:
+        executable: cmd.exe
+      register: output
+      ignore_errors: true
+      when: script[-3:] == "bat"
 
     - name: Show script output
       ansible.builtin.debug:
