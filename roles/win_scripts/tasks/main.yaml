@@ -5,12 +5,12 @@
 
 - name: Run script via win_shell
   ansible.builtin.include_role:
-    name: winshell
+    name: eingram23.homelab.win_shell
   when: schtask == "disabled"
 
 - name: Run script via scheduled task
   ansible.builtin.include_role:
-    name: win_schtasks
+    name: eingram23.homelab.win_schtasks
   when: schtask == "enabled"
 
 - name: Clean up script
