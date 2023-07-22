@@ -5,7 +5,7 @@
 
 - name: Run script via win_shell
   ansible.builtin.include_role:
-    name: win_shell
+    name: winshell
   when: schtask == "disabled"
 
 - name: Run script via scheduled task
