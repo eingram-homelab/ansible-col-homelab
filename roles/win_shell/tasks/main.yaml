@@ -1,3 +1,6 @@
+- ansible.builtin.debug:
+    var: script
+
 - name: Powershell script
   when: script[-3:] == "ps1"
   block:
