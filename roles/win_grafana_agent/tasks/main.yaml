@@ -16,7 +16,8 @@
     cmd: |
       c:\temp\grafana-agent-installer-{{ ver }}\grafana-agent-installer.exe /S
 
-- name: Create agent config to host
+- name: Create agent config on host
   ansible.windows.win_template:
     src: agent-config.yaml.j2
     dest: c:\program files\grafana agent\agent-config.yaml
+  notify: Restart grafana agent
