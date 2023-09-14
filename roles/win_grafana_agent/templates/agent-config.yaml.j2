@@ -1,0 +1,87 @@
+server:
+  log_level: info
+
+metrics:
+  wal_directory: "C:\\Program Files\\Grafana Agent\\"
+  global:
+    scrape_interval: 1m
+    scrape_timeout: 10s
+    external_labels:
+      env: {{ env }}
+    remote_write:
+      - url: http://prom.local.lan:9090/api/v1/write
+                
+logs:
+  configs:
+  - name: default
+    positions:
+      filename: "C:\\Program Files\\Grafana Agent\\positions\\"
+    scrape_configs:
+    - job_name: windows-application
+      windows_events:
+        use_incoming_timestamp: false
+        bookmark_path: "./bookmark-application.xml"
+        eventlog_name: "Application"
+        xpath_query: '*'
+        labels:
+          job: windows-application
+      relabel_configs:
+        - source_labels: ['computer']
+          target_label: 'host'
+    - job_name: windows-system
+      windows_events:
+        use_incoming_timestamp: false
+        bookmark_path: "./bookmark-system.xml"
+        eventlog_name: "System"
+        xpath_query: '*'
+        labels:
+          job: windows-system
+      relabel_configs:
+        - source_labels: ['computer']
+          target_label: 'host'
+    - job_name: windows-security
+      windows_events:
+        use_incoming_timestamp: false
+        bookmark_path: "./bookmark-security.xml"
+        eventlog_name: "Security"
+        xpath_query: '*'
+        labels:
+          job: windows-security
+      relabel_configs:
+        - source_labels: ['computer']
+          target_label: 'host'
+    clients:
+      - url: http://loki.local.lan:3100/loki/api/v1/push
+
+integrations:
+  agent:
+    enabled: true
+  windows_exporter:
+    enabled: true
+    enabled_collectors: {{ collectors }}
+    service:
+      where_clause: "\
+        Name='Dhcp' OR \
+        Name='Dnscache' OR \
+        Name='EventLog' OR \
+        Name='eventlog' OR \
+        Name='LanmanServer' OR \
+        Name='LanmanWorkstation' OR \
+        Name='lmhosts' OR \
+        Name='MSDTC' OR \
+        Name='Netlogon' OR \
+        Name='NlaSvc' OR \
+        Name='PlugPlay' OR \
+        Name='RemoteRegistry' OR \
+        Name='RpcSs' OR \
+        Name='SamSs' OR \
+        Name='Schedule' OR \
+        Name='Seclogon' OR \
+        Name='SNMP' OR \
+        Name='W32Time' OR \
+        Name='Winmgmt' OR \
+        Name='WinRM' OR \
+        Name='Workstation' OR \
+        Name='VMTools'\
+        "
+

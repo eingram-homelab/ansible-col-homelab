@@ -1,0 +1,22 @@
+---
+- name: Download grafana agent installer to host
+  ansible.windows.win_get_url:
+    url: https://github.com/grafana/agent/releases/download/{{ ver }}/grafana-agent-installer.exe.zip
+    dest: c:\temp\grafana-agent-installer.exe.zip
+
+- name: Unzip installer
+  community.windows.win_unzip:
+    src: c:\temp\grafana-agent-installer.exe.zip
+    dest: c:\temp\grafana-agent-installer-{{ ver }}
+    creates: c:\temp\grafana-agent-installer-{{ ver }}
+    delete_archive: false
+
+- name: Run installer
+  ansible.windows.win_shell:
+    cmd: |
+      c:\temp\grafana-agent-installer-{{ ver }}\grafana-agent-installer.exe /S
+
+- name: Create agent config to host
+  ansible.windows.win_template:
+    src: agent-config.yaml.j2
+    dest: c:\program files\grafana agent\agent-config.yaml

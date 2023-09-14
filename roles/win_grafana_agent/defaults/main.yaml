@@ -1,0 +1,3 @@
+---
+env: dev
+collectors: '"cpu,cs,logical_disk,time,memory,service,process,mscluster_cluster,mscluster_network,mscluster_node,mscluster_resource,mscluster_resourcegroup,iis,mssql,net,os,system,vmware,ad,dfsr,dns,dhcp"'
