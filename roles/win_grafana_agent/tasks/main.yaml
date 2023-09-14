@@ -12,9 +12,8 @@
     delete_archive: false
 
 - name: Run installer
-  ansible.windows.win_shell:
-    cmd: |
-      c:\temp\grafana-agent-installer-{{ ver }}\grafana-agent-installer.exe /S
+  ansible.windows.win_shell: |
+    c:\temp\grafana-agent-installer-{{ ver }}\grafana-agent-installer.exe /S
 
 - name: Create agent config on host
   ansible.windows.win_template:
