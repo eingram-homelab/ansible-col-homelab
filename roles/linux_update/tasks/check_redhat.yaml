@@ -9,7 +9,7 @@
 
 - name: Output list of updates
   ansible.builtin.debug:
-    msg: "{{ yumoutput | json_query('results[].{name2: name, release: release, version: version}') }}"
+    msg: "{{ yumoutput | json_query('results[].{name: name, release: release, version: version}') }}"
 
 # - ansible.builtin.debug:
 #     var: yumoutput
