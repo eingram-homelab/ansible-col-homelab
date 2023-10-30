@@ -1,4 +1,9 @@
 ---
+- name: Uninstall windows_exporter if present
+  ansible.windows.win_package:
+    product_id: '{344EDA7B-3B94-4E58-AD9C-BF019081C485}'
+    state: absent
+
 - name: Download grafana agent installer to host
   ansible.windows.win_get_url:
     url: https://github.com/grafana/agent/releases/download/{{ ver }}/grafana-agent-installer.exe.zip
