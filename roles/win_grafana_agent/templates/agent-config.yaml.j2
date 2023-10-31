@@ -12,10 +12,9 @@ metrics:
       - url: http://prom.local.lan:9090/api/v1/write
                 
 logs:
+  positions_directory: "C:\\Program Files\\Grafana Agent\\positions\\"
   configs:
   - name: default
-    positions:
-      filename: "C:\\Program Files\\Grafana Agent\\positions\\"
     scrape_configs:
     - job_name: windows-application
       windows_events:
