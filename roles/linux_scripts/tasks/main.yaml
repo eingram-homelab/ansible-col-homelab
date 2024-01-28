@@ -1,0 +1,14 @@
+- name: Copy script to host
+  ansible.windows.copy:
+    src: "{{ role_path }}/files/{{ category }}/{{ script }}"
+    dest: /var/tmp/
+    mode: '0644'
+
+- name: Run script via shell
+  ansible.builtin.include_role:
+    name: eingram23.homelab.linux_shell
+
+- name: Clean up script
+  ansible.windows.file:
+    path: /var/tmp/{{ script }}
+    state: absent

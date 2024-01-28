@@ -1,0 +1,41 @@
+- ansible.builtin.debug:
+    var: script
+
+- name: Bash script
+  when: script[-2:] == "sh"
+  block:
+    - name: Run bash script on host
+      ansible.builtin.script: /var/tmp/{{ script }} {{ param }}
+      register: bash_output
+      ignore_errors: true
+
+    - name: Show script output
+      ansible.builtin.debug:
+        var: bash_output.stdout_lines
+      when: bash_output is defined
+
+    - name: Show script error
+      ansible.builtin.debug:
+        var: bash_output.stderr
+      when: bash_output.stderr is defined and bash_output.stderr != ""
+
+- name: Python script
+  when: script[-2:] == "py"
+  block:
+    - name: Run python file on host
+      ansible.builtin.script: /var/tmp/{{ script }} {{ param }}
+      args:
+        executable: python3
+      register: py_output
+      ignore_errors: true
+      when: script[-3:] == "py"
+
+    - name: Show script output
+      ansible.builtin.debug:
+        var: py_output.stdout_lines
+      when: py_output is defined
+
+    - name: Show script error
+      ansible.builtin.debug:
+        var: py_output.stderr
+      when: py_output.stderr is defined and py_output.stderr != ""
