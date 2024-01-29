@@ -5,7 +5,9 @@
   when: script[-2:] == "sh"
   block:
     - name: Run bash script on host
-      ansible.builtin.script: /var/tmp/{{ script }} {{ param }}
+      ansible.builtin.shell: /var/tmp/{{ script }} {{ param }}
+      args:
+        executable: bash
       register: bash_output
       ignore_errors: true
 
@@ -23,7 +25,7 @@
   when: script[-2:] == "py"
   block:
     - name: Run python file on host
-      ansible.builtin.script: /var/tmp/{{ script }} {{ param }}
+      ansible.builtin.shell: /var/tmp/{{ script }} {{ param }}
       args:
         executable: python3
       register: py_output
