@@ -1,25 +1,25 @@
 - ansible.builtin.debug:
     var: script
 
-- name: Bash script
+- name: sh script
   when: script[-2:] == "sh"
   block:
-    - name: Run bash script on host
+    - name: Run sh script on host
       ansible.builtin.shell: /var/tmp/{{ script }} {{ param }}
       args:
-        executable: bash
-      register: bash_output
+        executable: sh
+      register: sh_output
       ignore_errors: true
 
     - name: Show script output
       ansible.builtin.debug:
-        var: bash_output.stdout_lines
-      when: bash_output is defined
+        var: sh_output.stdout_lines
+      when: sh_output is defined
 
     - name: Show script error
       ansible.builtin.debug:
-        var: bash_output.stderr
-      when: bash_output.stderr is defined and bash_output.stderr != ""
+        var: sh_output.stderr
+      when: sh_output.stderr is defined and sh_output.stderr != ""
 
 - name: Python script
   when: script[-2:] == "py"
