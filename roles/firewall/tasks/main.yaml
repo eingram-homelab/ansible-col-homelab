@@ -19,5 +19,10 @@
   loop: "{{ fw_port }}"
   loop_control:
     loop_var: fw_port_item
-  notify:
-    - Restart firewall
+  # notify:
+  #   - Restart firewall
+
+- name: Restart firewall
+  ansible.builtin.systemd:
+    name: firewalld
+    state: restarted
