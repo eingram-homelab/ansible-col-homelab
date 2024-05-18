@@ -1,0 +1,57 @@
+---
+- name: Create Scheduled Task
+  ansible.windows.win_shell: |
+    $Action = New-ScheduledTaskAction -Execute "cmd.exe" -Argument "/c powershell.exe -File C:\temp\{{ script }} > c:\temp\{{ script }}_output.txt 2>c:\temp\{{ script }}_err_output.txt"
+    $Trigger = Get-CimClass "MSFT_TaskRegistrationTrigger" -Namespace "Root/Microsoft/Windows/TaskScheduler"
+    $Task = New-ScheduledTask -Action $Action -Trigger $Trigger
+    Register-ScheduledTask -User "SYSTEM" -TaskName "{{ script }}" -InputObject $Task
+
+- name: Get Scheduled Task status
+  ansible.windows.win_shell:
+    (Get-ScheduledTask -TaskName "{{ script }}").State
+  register: task_status
+  until: task_status.stdout is not search("Running")
+  retries: 1440
+  delay: 5
+  changed_when: false
+
+- name: Delete Scheduled Task
+  ansible.windows.win_shell:
+    Unregister-ScheduledTask -TaskName "{{ script }}" -Confirm:$False
+
+- name: Output handling
+  block:
+    - name: Read std output
+      ansible.builtin.slurp:
+        src: c:\temp\{{ script }}_output.txt
+      register: output_encoded
+
+    - name: Set fact with std output
+      ansible.builtin.set_fact:
+        output: "{{ output_encoded.content | b64decode }}"
+
+    - name: Read std error output
+      ansible.builtin.slurp:
+        src: c:\temp\{{ script }}_err_output.txt
+      register: err_output_encoded
+
+    - name: Set fact with err output
+      ansible.builtin.set_fact:
+        err_output: "{{ err_output_encoded.content | b64decode }}"
+
+    - name: Display output
+      ansible.builtin.debug:
+        var: output
+
+    - name: Display err output
+      ansible.builtin.debug:
+        var: err_output
+
+    - name: Clean up created files
+      win_file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - c:\temp\{{ script }}_output.txt
+        - c:\temp\{{ script }}_err_output.txt
+  ignore_errors: true
