@@ -1,0 +1,26 @@
+---
+- name: inmem Test
+  hosts: all
+  gather_facts: false
+
+  tasks:
+
+    - name: Create inmem inventory
+      ansible.builtin.add_host:
+        host: "{{ item }}"
+        test: "test"
+        groups: "windows_servers"
+      with_items: "{{ ansible_play_hosts_all }}"
+      # delegate_to: localhost
+      run_once: true
+
+- name: Run tasks
+  hosts: windows_servers
+  gather_facts: false
+
+  tasks:
+
+    - name: winping
+      ansible.windows.win_ping:
+        
+        

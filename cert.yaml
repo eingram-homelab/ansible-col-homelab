@@ -1,0 +1,68 @@
+- name: Test create cert
+  hosts: localhost
+  become: false
+  gather_facts: false
+
+  tasks:
+
+    # - name: Login to vault and use the resulting token
+    #   community.hashi_vault.vault_login:
+    #     url: https://vault.local.lan
+    #     auth_method: userpass
+    #     username: "eingram"
+    #     password: "{{ lookup('hashi_vault', 'secret=secret/ssh/eingram:ssh_password') }}"
+    #     validate_certs: false
+    #   register: login_data
+
+    - name: Generate a certificate with an existing token
+      community.hashi_vault.vault_pki_generate_certificate:
+        role_name: ycdisp-dot-net
+        common_name: test1.ycdisp.net
+        ttl: 24h
+        url: https://vault.local.lan/
+        engine_mount_point: pki_int
+        auth_method: userpass
+        username: "eingram"
+        password: "{{ lookup('hashi_vault', 'secret=secret/ssh/eingram:ssh_password') }}"
+        validate_certs: false
+      register: cert_data
+
+    - name: Display generated certificate
+      debug:
+        msg: "{{ cert_data.data.data.certificate }}"
+
+    - name: Display generated ca_chain
+      debug:
+        msg: "{{ cert_data.data.data.ca_chain[1] }}"
+
+    - name: Display generated issuing_ca
+      debug:
+        msg: "{{ cert_data.data.data.issuing_ca }}"
+
+    - name: Display generated private_key
+      debug:
+        msg: "{{ cert_data.data.data.private_key }}"
+
+    # - name: List items from Vault via the remote host with userpass auth
+    #   community.hashi_vault.vault_list:
+    #     url: https://vault.local.lan
+    #     mount_point: pki_int
+    #     path: certs
+    #     # For kv2, the path needs to follow the pattern 'mount_point/metadata' or 'mount_point/metadata/path' to list all secrets in that path
+    #     auth_method: userpass
+    #     username: "eingram"
+    #     password: "{{ lookup('hashi_vault', 'secret=secret/ssh/eingram:ssh_password') }}"
+    #     validate_certs: false
+    #   register: secret
+
+    # - ansible.builtin.debug:
+    #     var: secret
+
+    # - name: Read a kv2 secret from Vault via the remote host with userpass auth
+    #   community.hashi_vault.vault_read:
+    #     url: https://vault.local.lan
+    #     path: secret/b2/ycdisp-s3-k8s
+    #     username: "eingram"
+    #     password: "{{ lookup('hashi_vault', 'secret=secret/ssh/eingram:ssh_password') }}"
+    #     validate_certs: false
+    #   register: secret

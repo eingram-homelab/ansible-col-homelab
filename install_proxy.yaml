@@ -1,0 +1,11 @@
+---
+- name: Install nginx proxy
+  hosts: "{{ hostvar }}"
+  become: true
+  become_method: sudo
+  gather_facts: false
+
+  tasks:
+
+    - ansible.builtin.include_role:
+        name: eingram23.homelab.nginx_proxy

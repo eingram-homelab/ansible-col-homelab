@@ -1,0 +1,13 @@
+---
+- name: proxy
+  hosts: "yc-appsrv1-dev.local.lan"
+  become: true
+  become_method: sudo
+  become_user: poduser
+
+  tasks:
+
+    - ansible.builtin.include_role:
+        name: eingram23.containers.nginx_proxy_acme
+
+      

@@ -1,0 +1,72 @@
+---
+- name: Windows updates
+  hosts: "{{ hostvar | default([]) }}"
+  gather_facts: false
+  become: true
+  ignore_unreachable: true
+
+  tasks:
+
+    - name: Assert proper vars set
+      ansible.builtin.assert:
+        that:
+          - install == "yes" or install == "no"
+          - update_db == "yes" or update_db == "no"
+
+    - name: Run WakeOnLAN role
+      ansible.builtin.import_role:
+        name: eingram23.homelab.wol
+
+    - name: Gather facts
+      ansible.builtin.setup:
+
+    - name: "Run Update Session Orchestrator check to clear GUI cached results"
+      ansible.windows.win_shell: |
+        UsoClient RefreshSettings
+        UsoClient ScanInstallWait
+
+    - name: Search-only, return list of found updates (if any)
+      ansible.windows.win_updates:
+        category_names:
+          - SecurityUpdates
+          - CriticalUpdates
+          - UpdateRollups
+          - Definition Updates
+          - Microsoft Defender Antivirus
+        state: searched
+      register: update_list
+
+    - name: Install updates and reboot
+      ansible.windows.win_updates:
+        category_names:
+          - SecurityUpdates
+          - CriticalUpdates
+          - UpdateRollups
+          - Definition Updates
+          - Microsoft Defender Antivirus
+        state: installed
+        reboot: true
+        reboot_timeout: 1200
+      register: update_list
+      when: install == "yes"
+
+    - name: Show results
+      ansible.builtin.debug:
+        var: update_list
+
+    - name: Write update data to postgres
+      community.postgresql.postgresql_query:
+        connect_params:
+          target_session_attrs: read-write
+          connect_timeout: 10
+        login_host: "postgres.local.lan"
+        login_user: "homelab"
+        login_password: "{{ lookup('hashi_vault', 'secret=secret/ssh/eingram:ssh_password') }}"
+        db: homelab_cmdb
+        query: >
+          INSERT INTO servers (server_name, os, hardware_type)
+          VALUES ( '{{ inventory_hostname }}', '{{ ansible_os_name }}', '{{ ansible_system_vendor }}' )
+          ON CONFLICT (server_name) DO UPDATE SET os = '{{ ansible_os_name }}', hardware_type = '{{ ansible_system_vendor }}';
+      when: update_db == "yes"
+      delegate_to: localhost
+      become: false

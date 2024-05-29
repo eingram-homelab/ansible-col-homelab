@@ -1,0 +1,53 @@
+- name: Run script on host
+  hosts: "{{ hostvar }}"
+  gather_facts: false
+  become: true
+  become_user: SYSTEM
+  become_method: runas
+
+  vars:
+    schtask: disabled
+
+  tasks:
+
+    - name: End play if trying to run non ps1 file with scheduled task
+      when: schtask == "enabled" and extension != "ps1"
+      block:
+        - ansible.builtin.debug:
+            msg: "*** Scheduled Task only allowed with powershell scripts ***"
+        
+        - meta: end_play      
+
+    - name: Create temp folder if missing
+      ansible.windows.win_file:
+        path: c:\temp
+        state: directory
+        
+    - name: Create script on host
+      ansible.windows.win_copy:
+        content: "{{ script_content }}"
+        dest: c:\temp\ans_ah_script.{{ extension }}
+
+    - name: Run script via win_shell
+      ansible.builtin.include_role:
+        name: eingram23.homelab.win_shell
+      vars:
+        script: ans_ah_script.{{ extension }}
+      when: schtask == "disabled"
+
+    - name: Run script via scheduled task
+      ansible.builtin.include_role:
+        name: eingram23.homelab.win_schtasks
+      vars:
+        script: ans_ah_script.{{ extension }}
+      when: schtask == "enabled" and extension == "ps1"
+
+    - name: Clean up script
+      ansible.windows.win_file:
+        path: c:\temp\ans_ah_script.{{ extension }}
+        state: absent      
+
+    - ansible.builtin.fail:
+      when: schtask == "disabled" and ((ps1_output.stderr is defined and ps1_output.stderr != "") or
+            (vbs_output.stderr is defined and vbs_output.stderr != "") or
+            (bat_output.stderr is defined and bat_output.stderr != ""))

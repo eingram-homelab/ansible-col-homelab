@@ -1,0 +1,15 @@
+---
+- name: Remove ccmclient from Windows computer
+  hosts: "{{ hostvar | default([]) }}"
+  gather_facts: false
+  become: true
+
+  tasks:
+
+    - name: Run ccmsetup with uninstall
+      ansible.windows.win_command: |
+        c:\windows\ccmsetup\ccmsetup /uninstall
+
+    - name: Reboot
+      ansible.windows.win_reboot:
+        reboot_timeout: 60

@@ -1,0 +1,16 @@
+---
+- name: Open firewall port(s)
+  hosts: "{{ hostvar }}"
+  become: true
+  become_method: sudo
+  gather_facts: false
+
+  tasks: 
+
+    - name: Open firewall ports
+      ansible.posix.firewalld:
+        port: "{{ item }}"
+        zone: public
+        permanent: true
+        state: enabled
+      loop: "{{ fw_ports.split('\n') }}"

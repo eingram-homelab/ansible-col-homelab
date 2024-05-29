@@ -1,0 +1,33 @@
+---
+- name: Activate Windows server with license key
+  hosts: "{{ hostvar }}"
+  become: true
+  become_method: runas
+
+  tasks:
+
+    - name: Display OS
+      ansible.builtin.debug:
+        var: ansible_distribution
+
+    - name: Set win2022 license key
+      ansible.builtin.set_fact:
+        lic: "{{ lookup('hashi_vault', 'secret=secret/microsoft/license:win2022dc') }}"
+      when: ansible_distribution | regex_search("Microsoft Windows Server 2022")
+
+    - name: Set win2016 license key
+      ansible.builtin.set_fact:
+        lic: "{{ lookup('hashi_vault', 'secret=secret/microsoft/license:win2016dc') }}"
+      when: ansible_distribution | regex_search("Microsoft Windows Server 2016")
+        
+    - name: Activate Windows
+      ansible.windows.win_shell: |
+        DISM /online /Set-Edition:ServerDatacenter /ProductKey:{{ lic }} /AcceptEula /NoRestart /Quiet
+      when: ansible_distribution | regex_search("Eval")
+      notify: Reboot after activation
+
+  handlers:
+
+    - name: Reboot after activation
+      ansible.windows.win_reboot:
+        reboot_timeout: 60

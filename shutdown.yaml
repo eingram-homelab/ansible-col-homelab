@@ -1,0 +1,11 @@
+---
+- name: Shutdown windows computer
+  hosts: "{{ hostvar }}"
+  gather_facts: false
+  become: true
+
+  tasks:
+
+    - name: Shutdown
+      ansible.windows.win_command:
+        shutdown /s /f /t 00

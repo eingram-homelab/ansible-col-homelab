@@ -1,0 +1,16 @@
+---
+- hosts: k3s-prod1.local.lan
+  gather_facts: false
+  become: false
+
+  tasks:
+
+    - kubernetes.core.k8s_json_patch:
+        kind: Service
+        namespace: longhorn-system
+        name: longhorn-backend
+        patch:
+          - op: add
+            path: /metadata/labels/env
+            value: prod
+        kubeconfig: /etc/rancher/k3s/k3s.yaml

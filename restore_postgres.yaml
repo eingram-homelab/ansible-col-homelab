@@ -1,0 +1,69 @@
+---
+- name: Backup awx postgresql database
+  hosts: localhost
+  gather_facts: true
+  become: false
+
+  vars:
+    kubeconfig: "{{ lookup('hashi_vault', 'secret=secret/kubernetes/' + k8shost + ':kubeconfig') }}"
+    backupfile: "backup-{{ '%Y-%m-%d' | strftime(ansible_date_time.epoch | int - 86400) }}.sql"
+
+  tasks:
+
+    - name: Create .kube folder
+      ansible.builtin.file:
+        path: ~/.kube
+        state: directory
+        mode: '0755'
+
+    - name: Create kubeconfig
+      ansible.builtin.copy:
+        content: "{{ kubeconfig }}"
+        dest: ~/.kube/config
+        mode: '0400'
+
+    - name: Retrieve awx postgres backup
+      delegate_to: homenas.local.lan
+      ansible.builtin.fetch:
+        src: /mnt/pool0/Shared/Backup/AWX/{{ backupfile }}
+        dest: /var/tmp/backup.sql
+        flat: true
+
+    - name: Scale down awx
+      kubernetes.core.k8s_scale:
+        api_version: v1
+        kind: Deployment
+        name: "{{ item }}"
+        namespace: awx
+        replicas: 0
+        wait_timeout: 60
+      loop:
+        - awx-operator-controller-manager
+        - awx-web
+        - awx-task
+
+    - name: Use kubectl to copy pg awx database to container
+      ansible.builtin.shell: |
+        kubectl exec pod/awx-postgres-13-0 -n awx -- dropdb -U awx awx
+        kubectl exec pod/awx-postgres-13-0 -n awx -- createdb -U awx awx
+        kubectl cp /var/tmp/backup.sql awx/awx-postgres-13-0:./backup.sql
+        kubectl exec pod/awx-postgres-13-0 -n awx -- psql -U awx -f backup.sql
+        kubectl exec pod/awx-postgres-13-0 -n awx -- rm backup.sql
+
+    - name: Scale up awx
+      kubernetes.core.k8s_scale:
+        api_version: v1
+        kind: Deployment
+        name: "{{ item }}"
+        namespace: awx
+        replicas: 1
+        wait_timeout: 60
+      loop:
+        - awx-operator-controller-manager
+        - awx-web
+        - awx-task
+
+    - name: Remove backup.sql
+      ansible.builtin.file:
+        path: /var/tmp/backup.sql
+        state: absent

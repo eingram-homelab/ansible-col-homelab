@@ -1,0 +1,11 @@
+---
+- name: Pause play
+  hosts: localhost
+  become: false
+  gather_facts: false
+
+  tasks:
+
+    - ansible.builtin.include_role:
+        name: eingram23.homelab.test
+        tasks_from: inspect_ee

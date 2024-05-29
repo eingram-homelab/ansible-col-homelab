@@ -1,0 +1,13 @@
+---
+- hosts: all
+  become: yes
+  become_method: sudo
+
+  vars_prompt:
+    - name: "host"
+      prompt: "Enter hostname"
+      private: no
+
+  tasks:
+    - name: Reboot host
+      reboot:

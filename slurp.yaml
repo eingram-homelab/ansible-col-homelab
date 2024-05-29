@@ -1,0 +1,18 @@
+---
+- name: slurp output test
+  hosts: "{{ hostvar }}"
+  gather_facts: false
+
+  tasks:
+
+    - name: Read std error output
+      ansible.builtin.slurp:
+        src: "{{ filename }}"
+      register: output_encoded
+
+    - name: Set fact with err output
+      ansible.builtin.set_fact:
+        output: "{{ output_encoded.content | b64decode }}"
+
+    - ansible.builtin.debug:
+        var: output

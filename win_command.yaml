@@ -1,0 +1,12 @@
+---
+- name: Run a windows command
+  hosts: "{{ hostvar | default([]) }}"
+  gather_facts: false
+
+  tasks:
+
+    - name: Run command
+      ansible.windows.win_command:
+        cmd: >
+          "C:\Program Files\RealVNC\VNC Server\vncserver.exe" -service -reload
+          

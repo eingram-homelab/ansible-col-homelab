@@ -1,0 +1,67 @@
+---
+- name: Setup Digital Ocean backup (homenas side)
+  hosts: "homenas.local.lan"
+  gather_facts: false
+  become: true
+  become_method: sudo
+  become_user: shareaccess
+
+  tasks:
+
+    - name: Check if rsync installed
+      ansible.builtin.package:
+        name: rsync
+        state: present
+      become: true
+      become_method: sudo
+      become_user: root
+
+    - name: Check if ssh keys already exist
+      ansible.builtin.stat:
+        path: /home/shareaccess/.ssh/id_rsa.pub
+      register: ssh_key_exists
+
+    - name: Generate ssh keys
+      ansible.builtin.shell:
+        ssh-keygen -q -t rsa -N '' -f ~/.ssh/id_rsa
+      when: not ssh_key_exists.stat.exists
+
+    - name: Get contents of id_rsa.pub
+      ansible.builtin.slurp:
+        src: /home/shareaccess/.ssh/id_rsa.pub
+      register: ssh_id_rsa
+
+    - name: Set fact with pub key
+      ansible.builtin.set_fact:
+        ssh_pub_key: "{{ ssh_id_rsa.content | b64decode }}"
+
+    - name: Set up cronjob to copy down backups from DO
+      ansible.builtin.cron:
+        name: "rsync backups from DO"
+        minute: "0"
+        hour: "2"
+        job: "rsync -a --delete -e 'ssh' ansible@yc-appsrv1.ycdisp.net:/home/shared/app_backups/ /mnt/pool0/Shared/Backup/DigitalOcean"
+
+    # - name: Add yc-appsrv1.ycdisp.net host key to known hosts
+    #   ansible.builtin.shell: |
+    #     ssh-keyscan yc-appsrv1.ycdisp.net >> ~/.ssh/known_hosts
+
+- name: Setup Digital Ocean backup (DO side)
+  hosts: "yc-appsrv1.ycdisp.net"
+  gather_facts: false
+  become: true
+  become_method: sudo
+  become_user: root
+
+  tasks:
+
+    - name: Run digocean_backup tasks from backups role
+      ansible.builtin.include_role:
+        name: eingram23.homelab.backups
+        tasks_from: digocean_backup
+
+    - name: Set authorized key
+      ansible.posix.authorized_key:
+        user: ansible
+        state: present
+        key: "{{ hostvars['homenas.local.lan']['ssh_pub_key'] }}"

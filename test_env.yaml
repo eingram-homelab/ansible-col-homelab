@@ -1,0 +1,16 @@
+---
+- name: Test
+  hosts: localhost
+  become: false
+
+  tasks:
+
+    - name: Show env variable
+      ansible.builtin.debug:
+        msg: >
+          "'{{ lookup('ansible.builtin.env', 'HOME') }}'"
+          "'{{ lookup('ansible.builtin.env', 'VAULT_ADDR') }}'"
+          "'{{ lookup('ansible.builtin.env', 'VAULT_CACERT') }}'"
+          "'{{ lookup('ansible.builtin.env', 'TF_CLI_ARGS_apply') }}'"
+          "'{{ lookup('ansible.builtin.env', 'TF_CLI_ARGS_destroy') }}'"
+          

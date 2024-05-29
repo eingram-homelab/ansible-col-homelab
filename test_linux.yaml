@@ -1,0 +1,23 @@
+---
+- name: Run first task
+  hosts: "{{ hostvar }}"
+  gather_facts: false
+  become: true
+
+  tasks:
+
+    - name: task 1
+      ansible.builtin.shell:
+        cmd: sleep 30
+
+    - name: task 2
+      ansible.builtin.shell:
+        cmd: sleep 30
+
+    - name: task 3
+      ansible.builtin.shell:
+        cmd: sleep 30
+        
+    - name: task 4
+      ansible.builtin.shell:
+        cmd: sleep 30

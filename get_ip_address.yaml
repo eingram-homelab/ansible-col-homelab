@@ -1,0 +1,14 @@
+---
+- name: Get IP address of host
+  hosts: all
+  gather_facts: yes
+
+  vars_prompt:
+    - name: "host"
+      prompt: "Enter hostname"
+      private: no
+
+  tasks:
+    - debug: var=ansible_all_ipv4_addresses
+    - debug: var=ansible_default_ipv4.address
+      

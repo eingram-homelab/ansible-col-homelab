@@ -1,0 +1,14 @@
+---
+- name: Run first task
+  hosts: "{{ hostvar }}"
+  gather_facts: false
+  become: true
+
+  tasks:
+
+    - ansible.builtin.set_fact:
+        test: true
+    
+    - ansible.builtin.debug:
+        var: test
+      when: test

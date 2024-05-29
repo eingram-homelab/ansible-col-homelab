@@ -1,0 +1,15 @@
+---
+- name: Import config to awx
+  hosts: localhost
+  gather_facts: false
+  become: false
+
+  tasks:
+
+    - name: Run import template
+      awx.awx.import:
+        controller_host: "{{ awx_host }}"
+        controller_username: admin
+        controller_password: "{{ password }}"
+        assets: "{{ lookup('file', 'awx.json') | from_json() }}"
+        validate_certs: false

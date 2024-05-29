@@ -1,0 +1,22 @@
+---
+- name: Run script on host
+  hosts: "{{ hostvar }}"
+  gather_facts: false
+  become: true
+  become_user: SYSTEM
+  become_method: runas
+
+  vars:
+    category: common
+    schtask: disabled
+
+  tasks:
+
+    - name: Run win_scripts role
+      ansible.builtin.include_role:
+        name: eingram23.homelab.win_scripts
+
+    - ansible.builtin.fail:
+      when: schtask == "disabled" and ((ps1_output.stderr is defined and ps1_output.stderr != "") or
+            (vbs_output.stderr is defined and vbs_output.stderr != "") or
+            (bat_output.stderr is defined and bat_output.stderr != ""))

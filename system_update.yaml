@@ -1,0 +1,73 @@
+---
+- name: Update software/kernel packages
+  hosts: "{{ hostvar|default([]) }}"
+  gather_facts: true
+  become: true
+  become_method: sudo
+
+  tasks:
+
+    - name: Check Ubuntu/Debian hosts
+      ansible.builtin.include_role:
+        name: eingram23.homelab.linux_update
+        tasks_from: check_deb_ub
+      when: ansible_distribution != 'CentOS' and
+            ansible_distribution != 'RedHat' and
+            ansible_distribution != 'Rocky' and
+            check == "yes"
+
+    - name: Check CentOS/Rocky/RHEL hosts
+      ansible.builtin.include_role:
+        name: eingram23.homelab.linux_update
+        tasks_from: check_redhat
+      when: (ansible_distribution == 'RedHat' or
+            ansible_distribution == 'CentOS' or
+            ansible_distribution == 'Rocky') and
+            check == "yes"
+
+    - name: Update Ubuntu/Debian hosts
+      ansible.builtin.include_role:
+        name: eingram23.homelab.linux_update
+        tasks_from: update_deb_ub
+      when: ansible_distribution != 'CentOS' and
+            ansible_distribution != 'RedHat' and
+            ansible_distribution != 'Rocky' and
+            check_reboot == "no" and
+            install == "yes"
+
+    - name: Update CentOS hosts
+      ansible.builtin.include_role:
+        name: eingram23.homelab.linux_update
+        tasks_from: update_centos
+      when: ansible_distribution == 'CentOS' and
+            check_reboot == "no" and
+            install == "yes"
+
+    - name: Update Rocky/RHEL hosts
+      ansible.builtin.include_role:
+        name: eingram23.homelab.linux_update
+        tasks_from: update_redhat
+      when: (ansible_distribution == 'RedHat' or
+            ansible_distribution == 'Rocky') and
+            check_reboot == "no" and
+            install == "yes"
+
+    - name: Check if reboot required
+      ansible.builtin.include_role:
+        name: eingram23.homelab.linux_update
+        tasks_from: checkreboot
+      when: check_reboot == "yes"
+
+    - name: Write update data to postgres
+      community.postgresql.postgresql_query:
+        connect_params:
+          target_session_attrs: read-write
+          connect_timeout: 10
+        login_host: "postgres.local.lan"
+        login_user: "homelab"
+        login_password: "{{ lookup('hashi_vault', 'secret=secret/ssh/eingram:ssh_password') }}"
+        db: homelab_cmdb
+        query: INSERT INTO servers (server_name, os, hardware_type) VALUES ( '{{ inventory_hostname }}', '{{ ansible_distribution }} {{ ansible_distribution_version }}', '{{ ansible_bios_vendor }}' ) ON CONFLICT (server_name) DO UPDATE SET os = '{{ ansible_distribution }} {{ ansible_distribution_version }}', hardware_type = '{{ ansible_bios_vendor }}';
+      when: update_db == "yes"
+      delegate_to: localhost
+      become: false
