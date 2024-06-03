@@ -17,34 +17,34 @@ collections:
   - community.docker
   - community.hashi_vault
   - ansible.posix
-  # - name: https://github.com/eingram23/ansible-col-homelab.git
-  #   type: git
-  #   version: main
-  # - name: https://github.com/eingram23/ansible-col-pihole.git
-  #   type: git
-  #   version: main
-  # - name: https://github.com/eingram23/ansible-col-tf_build.git
-  #   type: git
-  #   version: main
-  # - name: https://github.com/eingram23/ansible-col-vsphere.git
-  #   type: git
-  #   version: main
-  # - name: https://github.com/eingram23/ansible-col-splunk.git
-  #   type: git
-  #   version: main
-  # - name: https://github.com/eingram23/ansible-col-monitoring.git
-  #   type: git
-  #   version: main
-  # - name: https://github.com/eingram23/ansible-col-containers.git
-  #   type: git
-  #   version: main
-  # - name: https://github.com/eingram23/ansible-col-database.git
-  #   type: git
-  #   version: main
-  # - name: https://github.com/eingram23/ansible-col-kubernetes.git
-  #   type: git
-  #   version: main
-  # - name: https://github.com/eingram23/ansible-col-gcp.git
-  #   type: git
-  #   version: main
+  - name: https://github.com/eingram23/ansible-col-homelab.git
+    type: git
+    version: main
+  - name: https://github.com/eingram23/ansible-col-pihole.git
+    type: git
+    version: main
+  - name: https://github.com/eingram23/ansible-col-tf_build.git
+    type: git
+    version: main
+  - name: https://github.com/eingram23/ansible-col-vsphere.git
+    type: git
+    version: main
+  - name: https://github.com/eingram23/ansible-col-splunk.git
+    type: git
+    version: main
+  - name: https://github.com/eingram23/ansible-col-monitoring.git
+    type: git
+    version: main
+  - name: https://github.com/eingram23/ansible-col-containers.git
+    type: git
+    version: main
+  - name: https://github.com/eingram23/ansible-col-database.git
+    type: git
+    version: main
+  - name: https://github.com/eingram23/ansible-col-kubernetes.git
+    type: git
+    version: main
+  - name: https://github.com/eingram23/ansible-col-gcp.git
+    type: git
+    version: main
   
