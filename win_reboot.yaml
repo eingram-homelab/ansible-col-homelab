@@ -1,0 +1,12 @@
+- name: Test
+  hosts: "{{ hostvar }}"
+  gather_facts: false
+  become: true
+  become_method: runas
+  become_user: SYSTEM
+
+  tasks:
+
+    - name: Reboot windows host
+      ansible.windows.win_reboot:
+        reboot_timeout: 30

@@ -6,9 +6,5 @@
 
   tasks:
 
-    - ansible.builtin.set_fact:
-        test: true
-    
-    - ansible.builtin.debug:
-        var: test
-      when: test
+    - ansible.windows.win_shell: |
+        get-service
