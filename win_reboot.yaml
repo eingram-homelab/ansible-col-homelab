@@ -9,4 +9,11 @@
 
     - name: Reboot windows host
       ansible.windows.win_reboot:
-        reboot_timeout: 30
+        reboot_timeout: 1
+      ignore_errors: true
+
+    - name: Wait for
+      ansible.builtin.wait_for_connection:
+        sleep: 1
+        timeout: 60
+        delay: 1
