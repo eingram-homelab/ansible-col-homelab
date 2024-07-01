@@ -1,0 +1,12 @@
+---
+- hosts: localhost
+  gather_facts: false
+  become: false
+
+  tasks:
+
+    - ansible.builtin.shell: sleep 10
+        
+    - ansible.builtin.pause:
+        minutes: 5
+
