@@ -7,9 +7,9 @@
   tasks:
 
     - name: TEST - Sleep 10
-      ansible.builtin.shell: sleep 10
+      ansible.builtin.shell: sleep 1
         
     - name: TEST - Pause
       ansible.builtin.pause:
-        minutes: 5
+        seconds: 1
 
