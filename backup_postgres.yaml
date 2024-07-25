@@ -23,7 +23,7 @@
 
     - name: Use kubectl to dump pg awx database
       ansible.builtin.shell: |
-        kubectl exec pod/awx-postgres-13-0 -n awx -- pg_dump -U awx > /var/tmp/backup.sql
+        kubectl exec pod/awx-postgres-15-0 -n awx -- pg_dump -U awx > /var/tmp/backup.sql
 
     - name: Copy backup.sql to homenas
       ansible.builtin.copy:
