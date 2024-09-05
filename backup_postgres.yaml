@@ -31,6 +31,7 @@
         dest: /mnt/pool0/Shared/Backup/AWX/backup-{{ ansible_date_time.date }}.sql
         mode: '0644'
       delegate_to: homenas.local.lan
+      become: true
       become_user: shareaccess
 
     - name: Remove backup.sql
