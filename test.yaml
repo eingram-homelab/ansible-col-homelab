@@ -1,15 +1,13 @@
 ---
 - name: TEST Playbook
-  hosts: localhost
+  hosts: all
   gather_facts: false
   become: false
 
   tasks:
 
-    - name: TEST - Sleep 10
-      ansible.builtin.shell: sleep 1
+    - debug: var=test
+    
+    - debug: var=test2
         
-    - name: TEST - Pause
-      ansible.builtin.pause:
-        seconds: 1
 
