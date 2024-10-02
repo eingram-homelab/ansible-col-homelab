@@ -48,4 +48,9 @@ collections:
   - name: https://github.com/eingram23/ansible-col-gcp.git
     type: git
     version: main
-  
+  - name: https://github.com/eingram23/ansible-col-windows.git
+    type: git
+    version: main
+  - name: https://github.com/eingram23/ansible-col-linux.git
+    type: git
+    version: main

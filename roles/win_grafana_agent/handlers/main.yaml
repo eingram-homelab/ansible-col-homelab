@@ -1,5 +1,0 @@
----
-- name: Restart grafana agent
-  ansible.windows.win_service:
-    name: Grafana Agent
-    state: restarted

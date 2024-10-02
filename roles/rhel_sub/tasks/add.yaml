@@ -1,3 +1,0 @@
----
-- name: Run subscription-manager to add subscription
-  ansible.builtin.shell: subscription-manager register --force --username {{sub_email}} --password {{sub_password}} --auto-attach

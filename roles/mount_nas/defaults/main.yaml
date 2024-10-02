@@ -1,3 +1,0 @@
----
-cifs_user: "{{ lookup('hashi_vault', 'secret=secret/homenas/cifs:user') }}"
-cifs_pwd: "{{ lookup('hashi_vault', 'secret=secret/homenas/cifs:passwd') }}"

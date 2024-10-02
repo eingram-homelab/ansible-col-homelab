@@ -1,6 +1,0 @@
----
-# handlers file for install_windows_exporter
-- name: Restart windows_exporter
-  ansible.windows.win_service:
-    name: windows_exporter
-    state: restarted
