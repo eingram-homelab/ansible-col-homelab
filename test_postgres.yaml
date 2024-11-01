@@ -1,0 +1,69 @@
+---
+- name: Postgres test
+  hosts: localhost
+  gather_facts: false
+  become: false
+
+# - name: Query postgres
+#   community.postgresql.postgresql_query:
+#     connect_params:
+#       target_session_attrs: read-write
+#       connect_timeout: 10
+#     login_host: "postgres.local.lan"
+#     login_user: "homelab"
+#     login_password: "{{ lookup('hashi_vault', 'secret=secret/ssh/eingram:ssh_password') }}"
+#     db: homelab_cmdb
+#     query: INSERT INTO servers (server_name, os, hardware_type) VALUES ( '{{ inventory_hostname }}', '{{ ansible_distribution }} {{ ansible_distribution_version }}', '{{ ansible_bios_vendor }}' ) ON CONFLICT (server_name) DO UPDATE SET os = '{{ ansible_distribution }} {{ ansible_distribution_version }}', hardware_type = '{{ ansible_bios_vendor }}';
+
+  tasks:
+
+    - name: Create postgres user
+      community.postgresql.postgresql_user:
+        connect_params:
+          target_session_attrs: read-write
+          connect_timeout: 10
+        login_host: "postgres.local.lan"
+        login_user: "postgres"
+        login_password: "{{ lookup('hashi_vault', 'secret=secret/ssh/eingram:ssh_password') }}"
+        name: homelab
+        password: "{{ lookup('hashi_vault', 'secret=secret/ssh/eingram:ssh_password') }}"
+
+    - name: Create postgres database
+      community.postgresql.postgresql_db:
+        connect_params:
+          target_session_attrs: read-write
+          connect_timeout: 10
+        login_host: "postgres.local.lan"
+        login_user: "postgres"
+        login_password: "{{ lookup('hashi_vault', 'secret=secret/ssh/eingram:ssh_password') }}"
+        name: homelab_cmdb
+        owner: homelab
+
+    - name: GRANT ALL PRIVILEGES ON DATABASE
+      community.postgresql.postgresql_privs:
+        connect_params:
+          target_session_attrs: read-write
+          connect_timeout: 10
+        login_host: "postgres.local.lan"
+        login_user: "postgres"
+        login_password: "{{ lookup('hashi_vault', 'secret=secret/ssh/eingram:ssh_password') }}"
+        db: homelab_cmdb
+        privs: ALL
+        role: homelab
+        type: database
+
+    - name: Create postgres table
+      community.postgresql.postgresql_table:
+        connect_params:
+          target_session_attrs: read-write
+          connect_timeout: 10
+        login_host: "postgres.local.lan"
+        login_user: "homelab"
+        login_password: "{{ lookup('hashi_vault', 'secret=secret/ssh/eingram:ssh_password') }}"
+        db: homelab_cmdb
+        name: servers
+        columns:
+          - server_name text primary key
+          - os text
+          - hardware_type text
+        owner: homelab

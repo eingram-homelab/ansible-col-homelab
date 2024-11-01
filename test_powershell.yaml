@@ -1,0 +1,16 @@
+---
+- name: Run script on host
+  hosts: HL-DC1.homelab.local
+  gather_facts: false
+  become: true
+  become_method: runas
+
+  tasks:
+
+    - name: Run powershell script on host
+      ansible.windows.win_shell: |
+          Get-Disk –number 0 | Get-Partition | Get-Volume
+      register: output
+
+    - ansible.builtin.debug:
+        var: output.stdout

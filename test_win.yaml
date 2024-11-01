@@ -1,0 +1,10 @@
+---
+- name: Run tasks
+  hosts: "veeam.local.lan"
+  gather_facts: false
+  become: true
+
+  tasks:
+
+    - ansible.windows.win_shell: |
+        Set-NetFirewallRule -Name 'WINRM-HTTP-In-TCP-PUBLIC' -RemoteAddress 'LocalSubnet'

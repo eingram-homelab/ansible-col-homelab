@@ -1,0 +1,7 @@
+- block:
+    - ansible.builtin.fail:
+      when: test == 1
+
+    - debug: var=test
+  rescue:
+    - debug: msg="rescued"
