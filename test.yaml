@@ -1,9 +1,13 @@
 ---
 - name: TEST
-  hosts: veeam.local.lan
-  gather_facts: false
+  hosts: localhost
   become: false
 
   tasks:
 
-    - ansible.windows.win_shell: restart-service winrm
+    - debug: var="{{ item }}"
+      loop:
+        - awx_job_id
+        - awx_user_id
+        - awx_job_template_name
+        - awx_user_name
