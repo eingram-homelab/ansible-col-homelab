@@ -1,0 +1,9 @@
+tower_job_templates:
+  - name: Test - jobstemplate
+    playbook: test_env.yaml
+    description: "Test"
+    extra_vars:
+    job_type: run
+    ask_limit_on_launch: true
+    inventory:
+    
