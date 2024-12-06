@@ -1,0 +1,26 @@
+- name: Create job template
+  job_template:
+    name: "Test Create Template"
+    job_type: "run"
+    organization: "Homelab"
+    inventory: "All Hosts"
+    project: "Homelab"
+    playbook: "ping.yml"
+    credentials:
+      - "Local"
+      - "2nd credential"
+    state: "present"
+    controller_config_file: "~/tower_cli.cfg"
+    survey_enabled: yes
+    survey:
+      - type: multiselect
+        question_name: test
+        variable: test
+        choices:
+          - choice1
+          - choice2
+    controller_host: awx.local.lan
+    controller_username: eingram
+    controller_password: "{{ lookup('hashi_vault', 'secret=secret/ssh/ansible:ssh_password') }}"
+    validate_certs: false
+        

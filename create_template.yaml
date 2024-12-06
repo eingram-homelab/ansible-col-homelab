@@ -1,0 +1,10 @@
+---
+- hosts: localhost
+  gather_facts: false
+  become: false
+
+  tasks:
+
+    - ansible.builtin.import_role:
+        name: eingram23.homelab.templates
+        tasks_from: create_template
