@@ -3,11 +3,13 @@
   hosts: localhost
   become: false
 
+  vars:
+    roles:
+      - test
+      - test2
+  
   tasks:
 
-    - debug: var="{{ item }}"
-      loop:
-        - awx_job_id
-        - awx_user_id
-        - awx_job_template_name
-        - awx_user_name
+    - ansible.builtin.include_role:
+        name: "{{ item }}"
+      loop: "{{ roles }}"

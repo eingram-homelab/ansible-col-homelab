@@ -1,4 +1,0 @@
----
-- name: Pause playbook to allow ee inspection
-  ansible.builtin.pause:
-    prompt: playbook paused - cancel job when finished

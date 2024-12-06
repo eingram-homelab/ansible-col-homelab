@@ -1,0 +1,5 @@
+---
+- name: Export template from AWX
+  awx.awx.export:
+    job_templates: AWX - Backup postgresql
+  
