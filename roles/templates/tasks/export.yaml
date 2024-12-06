@@ -5,7 +5,7 @@
     controller_host: awx.local.lan
     controller_username: eingram
     controller_password: "{{ lookup('hashi_vault', 'secret=secret/ssh/ansible:ssh_password') }}"
-    # validate_certs: false
+    validate_certs: false
   register: awx_export
 
 - ansible.builtin.debug:
