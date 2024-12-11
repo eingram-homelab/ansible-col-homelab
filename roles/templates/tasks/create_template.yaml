@@ -1,5 +1,5 @@
 - name: Create job template
-  job_template:
+  awx.awx.job_template:
     name: "Test Create Template"
     job_type: "run"
     organization: "Homelab"
