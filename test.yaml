@@ -1,15 +1,8 @@
 ---
 - name: TEST
-  hosts: localhost
+  hosts: all
   become: false
 
-  vars:
-    roles:
-      - test
-      - test2
-  
   tasks:
 
-    - ansible.builtin.include_role:
-        name: "{{ item }}"
-      loop: "{{ roles }}"
+    - debug: var=env
