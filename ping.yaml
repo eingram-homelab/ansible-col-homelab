@@ -1,0 +1,18 @@
+- name: Test connection to host
+  hosts: "{{ hostvar | default([]) }}"
+  gather_facts: true
+
+  tasks:
+    - name: Ping host if Linux
+      ansible.builtin.ping:
+      when: ansible_facts['os_family'] == 'Linux'
+      register: result
+
+    - name: Ping host if Windows
+      ansible.windows.win_ping:
+      when: ansible_facts['os_family'] == 'Windows'
+      register: result
+
+    - name: Show result
+      ansible.builtin.debug:
+        var: result
