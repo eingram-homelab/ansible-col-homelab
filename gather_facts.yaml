@@ -1,0 +1,19 @@
+---
+- name: Gather facts and display
+  hosts: all
+  gather_facts: false
+  become: false
+
+  tasks:
+
+    - name: Get facts
+      ansible.builtin.setup:
+      register: facts
+
+    - name: Print facts
+      ansible.builtin.debug:
+        var: facts
+
+    - name: Print hardware manufacturer
+      ansible.builtin.debug:
+        var: facts.ansible_system_vendor
