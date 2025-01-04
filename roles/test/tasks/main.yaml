@@ -1,2 +1,5 @@
 ---
-- debug: msg=test
+- debug: msg="{{ test_var }} is from test role"
+
+- ansible.builtin.include_role:
+    name: eingram23.homelab.test2

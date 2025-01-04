@@ -1,2 +1,2 @@
 ---
-- debug: msg=test2
+- debug: msg="{{ test_var }} is from test2 role"
