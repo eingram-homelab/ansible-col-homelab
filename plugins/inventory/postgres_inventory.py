@@ -74,7 +74,7 @@ class InventoryModule(BaseInventoryPlugin, Cacheable, Constructable):
     
     def parse(self, inventory, loader, path, cache=True):
         super(InventoryModule, self).parse(inventory, loader, path, cache)
-        config_date = self._read_config_data(path)
+        config_data = self._read_config_data(path)
         
         # set _options from config data
         self._consume_options(config_data)
