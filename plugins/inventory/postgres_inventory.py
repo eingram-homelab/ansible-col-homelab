@@ -75,18 +75,35 @@ class InventoryModule(BaseInventoryPlugin):
     def parse(self, inventory, loader, path, cache=True):
         super(InventoryModule, self).parse(inventory, loader, path, cache)
         self._read_config_data(path)
+        
         try:
+            db_host = self.get_option('db_host')
+            db_port = self.get_option('db_port')
+            db_name = self.get_option('db_name')
             db_table = self.get_option('db_table')
-            db_params = {
-                "db_host": self.get_option('db_host'),
-                "db_port": self.get_option('db_port'),
-                "db_name": self.get_option('db_name'),
-                "db_user": self.get_option('db_user'),
-                "db_password": self.get_option('db_password')
-            }
+            db_user = self.get_option('db_user')
+            db_password = self.get_option('db_password')
         except AnsibleError as e:
             raise AnsibleError(f"Missing required options: {e}")
             
+        if self.templar.is_template(db_password):
+            db_password = self.templar.template(variable=db_password, disable_lookups=False)
+        elif isinstance(db_password, AnsibleVaultEncryptedUnicode):
+            db_password = db_password.data
+
+        if self.templar.is_template(db_username):
+            db_username = self.templar.template(variable=db_username, disable_lookups=False)
+        elif isinstance(db_username, AnsibleVaultEncryptedUnicode):
+            db_username = db_username.data
+            
+        db_params = {
+            "db_host": self.get_option('db_host'),
+            "db_port": self.get_option('db_port'),
+            "db_name": self.get_option('db_name'),
+            "db_user": self.get_option('db_user'),
+            "db_password": self.get_option('db_password')
+        }
+
         with PostgresInventory(**db_params) as inventory:
             records = inventory.get_inventory(db_table)
             for row in records:
