@@ -60,7 +60,7 @@ except Exception as e:
 
 from psycopg2 import Error
 
-class InventoryModule(BaseInventoryPlugin, Cacheable):
+class InventoryModule(BaseInventoryPlugin, Cacheable, Constructable):
     NAME = "eingram23.homelab.postgres_inventory"
 
     def verify_file(self, path):
@@ -104,11 +104,11 @@ class InventoryModule(BaseInventoryPlugin, Cacheable):
             db_user = db_user.data
             
         db_params = {
-            "db_host": self.get_option('db_host'),
-            "db_port": self.get_option('db_port'),
-            "db_name": self.get_option('db_name'),
-            "db_user": self.get_option('db_user'),
-            "db_password": self.get_option('db_password')
+            "db_host": db_host,
+            "db_port": db_port,
+            "db_name": db_name,
+            "db_user": db_user,
+            "db_password": db_password
         }
 
         with PostgresInventory(**db_params) as inventory:
