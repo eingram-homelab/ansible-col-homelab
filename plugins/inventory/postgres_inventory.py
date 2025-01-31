@@ -1,4 +1,6 @@
 
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
 
 DOCUMENTATION = r"""
     name: postgres_inventory
@@ -60,14 +62,6 @@ class InventoryModule(BaseInventoryPlugin):
             db_password = self.get_option('db_password')
         except AnsibleParserError as e:
             raise AnsibleParserError(f"Missing required options: {e}")
-        
-        db_params = {
-        "db_host": "homenas.local.lan",
-        "db_port": "5432",
-        "db_name": "homelab_cmdb",
-        "db_user": "homelab_cmdb",
-        "db_password": db_password_secret['data']['ssh_password']
-        }
         
         with PostgresInventory(**db_params) as inventory:
             records = inventory.get_inventory("servers")
