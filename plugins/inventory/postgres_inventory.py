@@ -54,17 +54,19 @@ class InventoryModule(BaseInventoryPlugin):
         super(InventoryModule, self).parse(inventory, loader, path, cache)
         self._read_config_data(path)
         try:
-            db_host = self.get_option('db_host')
-            db_port = self.get_option('db_port')
-            db_name = self.get_option('db_name')
             db_table = self.get_option('db_table')
-            db_user = self.get_option('db_user')
-            db_password = self.get_option('db_password')
+            db_params = {
+                "db_host": self.get_option('db_host'),
+                "db_port": self.get_option('db_port'),
+                "db_name": self.get_option('db_name'),
+                "db_user": self.get_option('db_user'),
+                "db_password": self.get_option('db_password')
+            }
         except AnsibleParserError as e:
             raise AnsibleParserError(f"Missing required options: {e}")
-        
+            
         with PostgresInventory(**db_params) as inventory:
-            records = inventory.get_inventory("servers")
+            records = inventory.get_inventory(db_table)
         
             # json_output = inventory.convert_to_json(records)
             # print(json_output)
