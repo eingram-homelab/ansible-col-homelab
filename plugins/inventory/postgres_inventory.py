@@ -47,7 +47,7 @@ DOCUMENTATION = r"""
 
 import psycopg2
 
-from ansible.plugins.inventory import BaseInventoryPlugin, Cacheable
+from ansible.plugins.inventory import BaseInventoryPlugin, Cacheable, Templar
 from ansible.errors import AnsibleError, AnsibleParserError
 from ansible.parsing.yaml.objects import AnsibleVaultEncryptedUnicode
 
