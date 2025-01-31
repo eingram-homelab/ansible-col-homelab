@@ -42,7 +42,7 @@ from ansible.plugins.inventory import BaseInventoryPlugin
 from ansible.errors import AnsibleParserError
 
 class InventoryModule(BaseInventoryPlugin):
-    NAME = "postgres_inventory"
+    NAME = "eingram23.homelab.postgres_inventory"
 
     def verify_file(self, path):
         if not path.endswith('postgres_plugin.yml') and not path.endswith('postgres_plugin.yaml'):
