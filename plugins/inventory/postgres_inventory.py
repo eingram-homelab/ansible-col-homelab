@@ -74,8 +74,11 @@ class InventoryModule(BaseInventoryPlugin, Cacheable, Constructable):
     
     def parse(self, inventory, loader, path, cache=True):
         super(InventoryModule, self).parse(inventory, loader, path, cache)
-        self._read_config_data(path)
+        config_date = self._read_config_data(path)
         
+        # set _options from config data
+        self._consume_options(config_data)
+
         try:
             db_host = self.get_option('db_host')
             db_port = self.get_option('db_port')
