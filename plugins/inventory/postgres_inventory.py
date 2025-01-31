@@ -64,13 +64,13 @@ class InventoryModule(BaseInventoryPlugin):
     NAME = "eingram23.homelab.postgres_inventory"
 
     def verify_file(self, path):
-    ''' return true/false if this is possibly a valid file for this plugin to consume '''
-    valid = False
-    if super(InventoryModule, self).verify_file(path):
-        # base class verifies that file exists and is readable by current user
-        if path.endswith(('postgres_inventory.yaml', 'postgres_inventory.yml')):
-            valid = True
-    return valid
+        ''' return true/false if this is possibly a valid file for this plugin to consume '''
+        valid = False
+        if super(InventoryModule, self).verify_file(path):
+            # base class verifies that file exists and is readable by current user
+            if path.endswith(('postgres_inventory.yaml', 'postgres_inventory.yml')):
+                valid = True
+        return valid
     
     def parse(self, inventory, loader, path, cache=True):
         super(InventoryModule, self).parse(inventory, loader, path, cache)
