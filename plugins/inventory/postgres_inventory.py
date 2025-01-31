@@ -89,12 +89,8 @@ class InventoryModule(BaseInventoryPlugin, Cacheable, Constructable):
         except AnsibleError as e:
             raise AnsibleError(f"Missing required options: {e}")
             
-        
-        print(db_password)
         if self.templar.is_template(db_password):
-            print("detected template")
             db_password = self.templar.template(variable=db_password, disable_lookups=False)
-            print(db_password)
         elif isinstance(db_password, AnsibleVaultEncryptedUnicode):
             db_password = db_password.data
 
