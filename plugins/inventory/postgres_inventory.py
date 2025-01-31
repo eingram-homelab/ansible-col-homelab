@@ -5,8 +5,13 @@ __metaclass__ = type
 DOCUMENTATION = r"""
     name: postgres_inventory
     short_description: An Ansible plugin that retrieves inventory data from Postgres
+    author: Edward Ingram
     description:
         - Reads servers from a Postgres DB and populates inventory
+    extends_documentation_fragment:
+        - inventory_cache
+    requirements:
+        - psycopg2
     options:
         plugin:
             description: The name of this plugin
@@ -26,28 +31,46 @@ DOCUMENTATION = r"""
             description: Table name
             required: true
         db_user:
-            description: Database user
+            description: 
+            - Database user
+            - Accepts vault encrypted variable.
+            - Accepts Jinja to template the value
             required: true
         db_password:
-            description: Database password or use environment variable
+            description: 
+            - Database password or use environment variable
+            - Accepts vault encrypted variable.
+            - Accepts Jinja to template the value
             required: false
+
 """
 
 import psycopg2
+
+from ansible.plugins.inventory import BaseInventoryPlugin, Cacheable
+from ansible.errors import AnsibleError, AnsibleParserError
+from ansible.parsing.yaml.objects import AnsibleVaultEncryptedUnicode
+
+try:
+    # pyscopg2 is required for this plugin to connect to postgres database
+    import psycopg2
+except Exception as e:
+    print(f"Failed to import psycopg2: {e}")
+    raise SystemExit(1)
+
 from psycopg2 import Error
-import os
-import json
-import getpass
-from ansible.plugins.inventory import BaseInventoryPlugin
-from ansible.errors import AnsibleParserError
 
 class InventoryModule(BaseInventoryPlugin):
     NAME = "eingram23.homelab.postgres_inventory"
 
     def verify_file(self, path):
-        if not path.endswith('postgres_plugin.yml') and not path.endswith('postgres_plugin.yaml'):
-            return False
-        return super(InventoryModule, self).verify_file(path)
+    ''' return true/false if this is possibly a valid file for this plugin to consume '''
+    valid = False
+    if super(InventoryModule, self).verify_file(path):
+        # base class verifies that file exists and is readable by current user
+        if path.endswith(('postgres_inventory.yaml', 'postgres_inventory.yml')):
+            valid = True
+    return valid
     
     def parse(self, inventory, loader, path, cache=True):
         super(InventoryModule, self).parse(inventory, loader, path, cache)
@@ -61,16 +84,12 @@ class InventoryModule(BaseInventoryPlugin):
                 "db_user": self.get_option('db_user'),
                 "db_password": self.get_option('db_password')
             }
-        except AnsibleParserError as e:
-            raise AnsibleParserError(f"Missing required options: {e}")
+        except AnsibleError as e:
+            raise AnsibleError(f"Missing required options: {e}")
             
         with PostgresInventory(**db_params) as inventory:
             records = inventory.get_inventory(db_table)
-        
-            # json_output = inventory.convert_to_json(records)
-            # print(json_output)
             for row in records:
-                # print(f"Getting info for {row[4]}")
                 server_name = row[0]
                 os_ver = row[1]
                 hardware_type = row[2]
@@ -92,21 +111,6 @@ class InventoryModule(BaseInventoryPlugin):
                 self.inventory.add_host(server_fqdn)
                 self.inventory.set_variable(server_fqdn, "ansible_host", ip_address)
                 self.inventory.set_variable(server_fqdn, "ansible_user", ansible_user)
-        #         if os_family not in inventory_dict:
-        #             inventory_dict[os_family] = {
-        #                 "hosts": []
-        #             }
-        #             inventory_dict["all"]["children"].append(os_family)
-                    
-        #         inventory_dict[os_family]["hosts"].append(server_fqdn)
-        #         inventory_dict["_meta"]["hostvars"][server_fqdn] = {
-        #             "ansible_host": ip_address,
-        #             "os": os_ver,
-        #             "hardware_type": hardware_type,
-        #             "env": env,
-        #             "ansible_user": ansible_user
-        #         }
-        # print(json.dumps(inventory_dict, indent=2))
 
 class PostgresInventory:
     """ Class to connect to a PostgreSQL database and retrieve inventory data """
@@ -130,11 +134,9 @@ class PostgresInventory:
                 port = self.db_port,
                 database = self.db_name
             )
-            # print("Connected to the database")
         except (Exception, Error) as error:
             print("Error while connecting to PostgreSQL", error)
-            raise
-            exit(1)
+            raise SystemExit(1)
             
     def get_inventory(self, db_table):
         cursor = self.connection.cursor()
@@ -144,7 +146,7 @@ class PostgresInventory:
     
     def __exit__(self, exc_type, exc_value, exc_traceback):
         self.connection.close()
-        # print("Connection closed")
+
 
 
     
