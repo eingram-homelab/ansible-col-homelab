@@ -91,10 +91,10 @@ class InventoryModule(BaseInventoryPlugin):
         elif isinstance(db_password, AnsibleVaultEncryptedUnicode):
             db_password = db_password.data
 
-        if self.templar.is_template(db_username):
-            db_username = self.templar.template(variable=db_username, disable_lookups=False)
-        elif isinstance(db_username, AnsibleVaultEncryptedUnicode):
-            db_username = db_username.data
+        if self.templar.is_template(db_user):
+            db_user = self.templar.template(variable=db_user, disable_lookups=False)
+        elif isinstance(db_user, AnsibleVaultEncryptedUnicode):
+            db_user = db_user.data
             
         db_params = {
             "db_host": self.get_option('db_host'),
