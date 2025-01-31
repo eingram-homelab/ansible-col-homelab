@@ -11,7 +11,7 @@ DOCUMENTATION = r"""
         plugin:
             description: The name of this plugin
             required: true
-            choices: ['postgres_inventory']
+            choices: ['eingram23.homelab.postgres_inventory']
         db_host:
             description: Postgres host
             required: true
