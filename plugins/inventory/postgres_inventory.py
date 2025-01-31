@@ -68,7 +68,7 @@ class InventoryModule(BaseInventoryPlugin):
         valid = False
         if super(InventoryModule, self).verify_file(path):
             # base class verifies that file exists and is readable by current user
-            if path.endswith(('postgres_inventory.yaml', 'postgres_inventory.yml')):
+            if path.endswith(('postgres.yaml', 'postgres.yml')):
                 valid = True
         return valid
     
