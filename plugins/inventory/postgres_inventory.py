@@ -1,10 +1,4 @@
-import psycopg2
-from psycopg2 import Error
-import os
-import json
-import getpass
-from ansible.plugins.inventory import BaseInventoryPlugin
-from ansible.errors import AnsibleParserError
+
 
 DOCUMENTATION = r"""
     name: postgres_inventory
@@ -38,45 +32,17 @@ DOCUMENTATION = r"""
             required: false
 """
 
-
+import psycopg2
+from psycopg2 import Error
+import os
+import json
+import getpass
+from ansible.plugins.inventory import BaseInventoryPlugin
+from ansible.errors import AnsibleParserError
 
 class InventoryModule(BaseInventoryPlugin):
     NAME = "postgres_inventory"
 
-    def db_connection(db_host, db_port, db_name, db_user, db_password):
-        try:
-            connection = psycopg2.connect(
-                user = db_user,
-                password = db_password,
-                host = db_host,
-                port = db_port,
-                database = db_name
-            )
-            # cursor = connection.cursor()
-            print("Connected to the database")
-            return connection
-        except (Exception, Error) as error:
-            print("Error while connecting to PostgreSQL", error)
-
-    def get_inventory(connection, db_table):
-        cursor = connection.cursor()
-        cursor.execute(f"SELECT * FROM {db_table}")
-        records = cursor.fetchall()
-        return records
-
-    def convert_to_json(inventory_data):
-        json_data = []
-        for row in inventory_data:
-            json_data.append({
-                "server_name": row[0],
-                "os": row[1],
-                "hardware_type": row[2],
-                "env": row[3],
-                "server_fqdn": row[4],
-                "ip_address": row[5]
-            })
-        print(json.dumps(json_data, indent=4))
-    
     def verify_file(self, path):
         if not path.endswith('postgres_plugin.yml') and not path.endswith('postgres_plugin.yaml'):
             return False
@@ -94,10 +60,96 @@ class InventoryModule(BaseInventoryPlugin):
             db_password = self.get_option('db_password')
         except AnsibleParserError as e:
             raise AnsibleParserError(f"Missing required options: {e}")
-        connection = db_connection(db_host, db_port, db_name, db_user, db_password)
-        records = get_inventory(connection, db_table)
-        for row in records:
-            hostname = row[0]
-            self.inventory.add_host(hostname)
-            # Map additional columns as needed
-            self.inventory.set_variable(hostname, 'ansible_host', row[5])
+        
+        db_params = {
+        "db_host": "homenas.local.lan",
+        "db_port": "5432",
+        "db_name": "homelab_cmdb",
+        "db_user": "homelab_cmdb",
+        "db_password": db_password_secret['data']['ssh_password']
+        }
+        
+        with PostgresInventory(**db_params) as inventory:
+            records = inventory.get_inventory("servers")
+        
+            # json_output = inventory.convert_to_json(records)
+            # print(json_output)
+            for row in records:
+                # print(f"Getting info for {row[4]}")
+                server_name = row[0]
+                os_ver = row[1]
+                hardware_type = row[2]
+                env = row[3]
+                server_fqdn = row[4]
+                ip_address = row[5]
+                os_family = row[6]
+                
+                if os_family == "RedHat" or os_family == "Debian":
+                    ansible_user = "ansible"
+                elif os_family == "Windows" and "homelab.local" in server_fqdn:
+                    ansible_user = "ansible@HOMELAB.LOCAL"
+                elif os_family == "Windows" and "local.lan" in server_fqdn:
+                    ansible_user = "ansible"
+                else:
+                    print(f"Unknown OS family for {server_fqdn}")
+                    quit()
+                
+                self.inventory.add_host(server_fqdn)
+                self.inventory.set_variable(server_fqdn, "ansible_host", ip_address)
+                self.inventory.set_variable(server_fqdn, "ansible_user", ansible_user)
+        #         if os_family not in inventory_dict:
+        #             inventory_dict[os_family] = {
+        #                 "hosts": []
+        #             }
+        #             inventory_dict["all"]["children"].append(os_family)
+                    
+        #         inventory_dict[os_family]["hosts"].append(server_fqdn)
+        #         inventory_dict["_meta"]["hostvars"][server_fqdn] = {
+        #             "ansible_host": ip_address,
+        #             "os": os_ver,
+        #             "hardware_type": hardware_type,
+        #             "env": env,
+        #             "ansible_user": ansible_user
+        #         }
+        # print(json.dumps(inventory_dict, indent=2))
+
+class PostgresInventory:
+    """ Class to connect to a PostgreSQL database and retrieve inventory data """
+    def __init__(self, db_host, db_port, db_name, db_user, db_password):
+        self.db_host = db_host
+        self.db_port = db_port
+        self.db_name = db_name
+        self.db_user = db_user
+        self.db_password = db_password
+
+    def __enter__(self):
+        self.connect()
+        return self
+    
+    def connect(self):
+        try:
+            self.connection = psycopg2.connect(
+                user = self.db_user,
+                password = self.db_password,
+                host = self.db_host,
+                port = self.db_port,
+                database = self.db_name
+            )
+            # print("Connected to the database")
+        except (Exception, Error) as error:
+            print("Error while connecting to PostgreSQL", error)
+            raise
+            exit(1)
+            
+    def get_inventory(self, db_table):
+        cursor = self.connection.cursor()
+        cursor.execute(f"SELECT * FROM {db_table}")
+        records = cursor.fetchall()
+        return records
+    
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        self.connection.close()
+        # print("Connection closed")
+
+
+    
