@@ -47,7 +47,7 @@ DOCUMENTATION = r"""
 
 import psycopg2
 
-from ansible.plugins.inventory import BaseInventoryPlugin, Cacheable, Templar
+from ansible.plugins.inventory import BaseInventoryPlugin, Cacheable, Constructable
 from ansible.errors import AnsibleError, AnsibleParserError
 from ansible.parsing.yaml.objects import AnsibleVaultEncryptedUnicode
 
@@ -60,7 +60,7 @@ except Exception as e:
 
 from psycopg2 import Error
 
-class InventoryModule(BaseInventoryPlugin):
+class InventoryModule(BaseInventoryPlugin, Cacheable, Constructable):
     NAME = "eingram23.homelab.postgres_inventory"
 
     def verify_file(self, path):
