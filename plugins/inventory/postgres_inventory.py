@@ -4,7 +4,6 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
     name: postgres_inventory
-    plugin_type: inventory
     short_description: An Ansible plugin that retrieves inventory data from Postgres
     description:
         - Reads servers from a Postgres DB and populates inventory
