@@ -1,0 +1,40 @@
+---
+- name: Manage Windows Service
+  hosts: "{{ hostvar | default([])}}"
+  become: true
+  gather_facts: false
+
+  vars:
+    win_service: "grafana agent"
+    win_service_action: "started"
+
+  tasks:
+
+    - name: Get service info for {{ win_service }}
+      ansible.windows.win_service_info:
+        name: "{{ win_service }}"
+      register: win_service_info
+
+    - name: Perform action on service
+      when: win_service_info.exists
+      block:
+        - name: Set service state to {{ win_service_action }}
+          ansible.windows.win_service:
+            name: "{{ win_service }}"
+            state: "{{ win_service_action }}"
+          register: win_service_action_result
+
+        - name: Show service action result
+          when: win_service_action_result.changed
+          ansible.builtin.debug:
+            msg: "{{ win_service }} was {{ win_service_action }}"
+
+        - name: Show service action result when no action taken
+          when: not win_service_action_result.changed
+          ansible.builtin.debug:
+            msg: "{{ win_service }} was already {{ win_service_action }}"
+
+    - name: Display if service doesn't exist
+      when: not win_service_info.exists
+      ansible.builtin.debug:
+        msg: "{{ win_service }} service doesn't exist"
