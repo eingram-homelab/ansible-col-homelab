@@ -1,56 +1,55 @@
 ---
 collections:
-  - awx.awx
-  - community.postgresql
-  - community.vmware
-  - community.general
-  - containers.podman
-  - community.mysql
-  - kubernetes.core
-  - lvrfrc87.git_acp
-  - community.crypto
-  - google.cloud
-  - chocolatey.chocolatey
-  - community.hashi_vault
-  - community.windows
-  - operator_sdk.util
-  - community.docker
-  - community.hashi_vault
-  - ansible.posix
-  - community.digitalocean
-  - name: https://github.com/eingram23/ansible-col-homelab.git
-    type: git
-    version: main
-  - name: https://github.com/eingram23/ansible-col-pihole.git
-    type: git
-    version: main
-  - name: https://github.com/eingram23/ansible-col-tf_build.git
-    type: git
-    version: main
-  - name: https://github.com/eingram23/ansible-col-vsphere.git
-    type: git
-    version: main
-  - name: https://github.com/eingram23/ansible-col-splunk.git
-    type: git
-    version: main
-  - name: https://github.com/eingram23/ansible-col-monitoring.git
-    type: git
-    version: main
-  - name: https://github.com/eingram23/ansible-col-containers.git
-    type: git
-    version: main
-  - name: https://github.com/eingram23/ansible-col-database.git
-    type: git
-    version: main
-  - name: https://github.com/eingram23/ansible-col-kubernetes.git
-    type: git
-    version: main
-  - name: https://github.com/eingram23/ansible-col-gcp.git
-    type: git
-    version: main
-  - name: https://github.com/eingram23/ansible-col-windows.git
-    type: git
-    version: main
-  - name: https://github.com/eingram23/ansible-col-linux.git
-    type: git
-    version: main
+- awx.awx
+- community.postgresql
+- community.vmware
+- community.general
+- containers.podman
+- community.mysql
+- kubernetes.core
+- lvrfrc87.git_acp
+- community.crypto
+- google.cloud
+- chocolatey.chocolatey
+- community.hashi_vault
+- community.windows
+- operator_sdk.util
+- community.docker
+- ansible.posix
+- community.digitalocean
+- name: https://github.com/eingram23/ansible-col-homelab.git
+  type: git
+  version: main
+- name: https://github.com/eingram23/ansible-col-pihole.git
+  type: git
+  version: main
+- name: https://github.com/eingram23/ansible-col-tf_build.git
+  type: git
+  version: main
+- name: https://github.com/eingram23/ansible-col-vsphere.git
+  type: git
+  version: main
+- name: https://github.com/eingram23/ansible-col-splunk.git
+  type: git
+  version: main
+- name: https://github.com/eingram23/ansible-col-monitoring.git
+  type: git
+  version: main
+- name: https://github.com/eingram23/ansible-col-containers.git
+  type: git
+  version: main
+- name: https://github.com/eingram23/ansible-col-database.git
+  type: git
+  version: main
+- name: https://github.com/eingram23/ansible-col-kubernetes.git
+  type: git
+  version: main
+- name: https://github.com/eingram23/ansible-col-gcp.git
+  type: git
+  version: main
+- name: https://github.com/eingram23/ansible-col-windows.git
+  type: git
+  version: main
+- name: https://github.com/eingram23/ansible-col-linux.git
+  type: git
+  version: main
