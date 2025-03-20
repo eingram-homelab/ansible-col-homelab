@@ -16,7 +16,7 @@ DOCUMENTATION = r"""
         plugin:
             description: The name of this plugin
             required: true
-            choices: ['postgres_inventory']
+            choices: ['eingram23.homelab.postgres_inventory']
         db_host:
             description: Postgres host
             required: true
@@ -61,7 +61,7 @@ except Exception as e:
 from psycopg2 import Error
 
 class InventoryModule(BaseInventoryPlugin, Cacheable, Constructable):
-    NAME = "postgres_inventory"
+    NAME = "eingram23.homelab.postgres_inventory"
 
     def verify_file(self, path):
         ''' return true/false if this is possibly a valid file for this plugin to consume '''
