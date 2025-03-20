@@ -1,0 +1,8 @@
+---
+plugin: postgres_inventory        # Name of the plugin
+db_host: homenas.local.lan
+db_port: 5432
+db_name: homelab_cmdb
+db_table: servers
+db_user: homelab_cmdb
+db_password: "{{ lookup('hashi_vault', 'secret=secret/ssh/eingram:ssh_password') }}"
