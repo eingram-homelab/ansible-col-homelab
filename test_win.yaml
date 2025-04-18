@@ -1,10 +1,20 @@
 ---
 - name: Run tasks
-  hosts: "veeam.local.lan"
+  hosts: "HL-DC1.homelab.local"
   gather_facts: false
   become: true
 
   tasks:
 
-    - ansible.windows.win_shell: |
-        Set-NetFirewallRule -Name 'WINRM-HTTP-In-TCP-PUBLIC' -RemoteAddress 'LocalSubnet'
+    - name: Test
+      ansible.windows.win_shell: |
+       get-ciminstance win32_process -filter "name = 'fontdrvhost.exe'" |select commandline
+       write-host "test"
+      register: process
+
+    - debug:
+        var: process.stdout
+
+      # - debug: msg="Splunk is running"
+      #   when: process.stdout is search("splund.exe")
+...

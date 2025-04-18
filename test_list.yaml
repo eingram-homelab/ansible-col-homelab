@@ -1,0 +1,20 @@
+---
+- name: Create list from registered var
+  hosts: "{{ hostvar | default([])}}"
+  become: true
+  gather_facts: true
+
+  tasks:
+
+    # - debug: var=ansible_play_hosts_all
+
+    - shell: |
+        for i in {{ ansible_play_hosts }}; do
+          echo "$i test"
+        done
+      run_once: true
+      register: result
+
+    - debug:
+        msg: "{{ result.stdout_lines }}"
+      run_once: true

@@ -1,0 +1,12 @@
+---
+- name: Reboot Windows
+  hosts: "{{ hostvar | default([])}}"
+  become: true
+  gather_facts: false
+
+  tasks:
+
+    - name: Reboot server
+      ansible.windows.win_reboot:
+        reboot_timeout: 600
+        msg: "Rebooting server"

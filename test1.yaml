@@ -1,0 +1,14 @@
+---
+- name: Run tasks
+  hosts: veeam.local.lan
+  gather_facts: true
+  become: true
+
+  tasks:
+
+    - debug: var=ansible_distribution
+
+    - name: Test
+      ansible.windows.win_shell:
+        start-sleep 15
+      timeout: "{{ 1 if '2019' in ansible_distribution | default('') else 20 }}"

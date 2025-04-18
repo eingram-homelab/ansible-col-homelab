@@ -8,6 +8,3 @@
     - name: Show var
       ansible.builtin.debug:
         var: prom_url
-
-    - ansible.builtin.include_role:
-        name: eingram23.linux.firewall

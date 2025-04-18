@@ -1,8 +1,0 @@
----
-- name: TEST
-  hosts: all
-  become: false
-
-  tasks:
-
-    - debug: var=env

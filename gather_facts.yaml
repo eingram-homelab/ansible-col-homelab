@@ -1,8 +1,8 @@
 ---
 - name: Gather facts and display
-  hosts: all
+  hosts: "{{ hostvar | default([])}}"
   gather_facts: false
-  become: false
+  become: true
 
   tasks:
 

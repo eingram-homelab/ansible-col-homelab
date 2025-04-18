@@ -1,0 +1,16 @@
+---
+- name: Test
+  hosts: localhost
+  become: false
+
+  tasks:
+
+    - name: Test uri
+      ansible.builtin.uri:
+        url: "http://dietpi2.local.lan:5380/api/zones/records/add?token=795acc7ecf5f7881899617841098ac9f91f879972a0ff3c3804ab191136ccc72&domain=test.local.lan&zone=local.lan&type=A&ipAddress=10.10.0.205"
+        method: GET
+        status_code: 200
+      register: result
+      failed_when: result.json.status != "ok"
+
+    - debug: var=result
