@@ -48,4 +48,4 @@ jobs:
           ansible-galaxy collection install -r collections/requirements.yml
 
       - name: Run playbook
-        run: ansible-playbook -i ansible-etc/inventory -e ${{ inputs.extra_vars }} -l ${{ inputs.limit }} ${{ inputs.playbook }}
+        run: ansible-playbook -i ansible-etc/inventory -e ${{ inputs.extra_vars }} -l ${{ inputs.limit }} playbooks/${{ inputs.playbook }}
