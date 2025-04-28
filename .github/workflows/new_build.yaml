@@ -1,0 +1,32 @@
+name: Run Ansible new_build playbook
+
+on:
+  workflow_call:
+    inputs:
+      ansible_limit:
+        description: 'Ansible limit for the playbook run'
+        required: true
+        type: string
+
+jobs:
+  run_new_build_playbook:
+    runs-on: arc-runners
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          repository: eingram-homelab/ansible-col-homelab
+          ref: main
+        
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+          
+      - name: Install Ansible
+        run: |
+          python -m pip install --upgrade pip
+          pip install ansible@2.18.0
+          
+      - name: Run playbook
+        run: ansible-playbook -i inventory.yml playbook.yml
