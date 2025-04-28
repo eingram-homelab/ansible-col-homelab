@@ -19,11 +19,6 @@ on:
         description: 'Ansible user for the playbook run'
         required: true
         type: string
-    secrets:
-      VAULT_TOKEN:
-        required: true
-      ansible_password:
-        required: true
 
 jobs:
   run_new_build_playbook:
