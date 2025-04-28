@@ -1,0 +1,51 @@
+name: Run Ansible new_build playbook
+
+on:
+  workflow_call:
+    inputs:
+      limit:
+        description: 'Ansible limit for the playbook run'
+        required: true
+        type: string
+      playbook:
+        description: 'Playbook to run'
+        required: true
+        type: string
+      extra_vars:
+        description: 'Extra variables for the playbook run'
+        required: false
+        type: string
+
+jobs:
+  run_new_build_playbook:
+    runs-on: arc-runners
+    steps:
+      - name: Checkout Ansible Homelab Collection
+        uses: actions/checkout@v4
+        with:
+          repository: eingram-homelab/ansible-col-homelab
+          ref: main
+        
+      - name: Checkout Ansible ETC Code
+        uses: actions/checkout@v4
+        with:
+          repository: eingram-homelab/ansible-etc
+          ref: main
+          path: ansible-etc
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+          
+      - name: Install Ansible
+        run: |
+          python -m pip install --upgrade pip
+          pip install ansible@2.18.0
+          
+      - name: Install Ansible collections
+        run: |
+          ansible-galaxy collection install -r collections/requirements.yml
+
+      - name: Run playbook
+        run: ansible-playbook -i ansible-etc/inventory -e ${{ inputs.extra_vars }} -l ${{ inputs.limit }} ${{ inputs.playbook }}
