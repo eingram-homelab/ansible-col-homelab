@@ -15,10 +15,29 @@ on:
         description: 'Extra variables for the playbook run'
         required: false
         type: string
+      ansible_user:
+        description: 'Ansible user for the playbook run'
+        required: true
+        type: string
+      VAULT_ADDR:
+        description: 'Vault address for the playbook run'
+        required: true
+        type: string
+        default: 'http://vault.local.lan:8200'
+    secrets:
+      VAULT_TOKEN:
+        required: true
+      ANSIBLE_PASSWORD:
+        required: true
 
 jobs:
   run_new_build_playbook:
     runs-on: arc-runners
+    env:
+      VAULT_ADDR: ${{ inputs.VAULT_ADDR }}
+      VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
+      ansible_password: ${{ secrets.ANSIBLE_PASSWORD }}
+      ansible_user: ${{ inputs.ansible_user }}
     steps:
       - name: Checkout Ansible Homelab Collection
         uses: actions/checkout@v4
