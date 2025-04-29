@@ -50,7 +50,7 @@ jobs:
       - name: Install Ansible
         run: |
           python -m pip install --upgrade pip
-          pip install ansible-core==2.18.5
+          pip install hvac==2.3.0 pyvmomi==8.0.3.0.1 ansible-core==2.18.5
           
       - name: Install Ansible collections
         run: |
