@@ -26,7 +26,6 @@ jobs:
     env:
       VAULT_ADDR: ${{ vars.VAULT_ADDR }}
       VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
-      ansible_password: ${{ secrets.ansible_password }}
       ansible_user: ${{ inputs.ansible_user }}
     steps:
       - name: Checkout Ansible Homelab Collection
@@ -58,5 +57,11 @@ jobs:
         run: |
           ansible-galaxy collection install -r collections/requirements.yml
 
+      - name: Create ansible ssh key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.ANSIBLE_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
       - name: Run playbook
-        run: ansible-playbook -i ansible-etc/inventory -e ${{ inputs.extra_vars }} -l ${{ inputs.limit }} playbooks/${{ inputs.playbook }}
+        run: ansible-playbook -i ansible-etc/inventory -e ${{ inputs.extra_vars }} -l ${{ inputs.limit }} --key-file "~/.ssh/id_rsa" playbooks/${{ inputs.playbook }}
