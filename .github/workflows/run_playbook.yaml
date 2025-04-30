@@ -60,7 +60,7 @@ jobs:
       - name: Create ansible ssh key
         run: |
           echo "${{ secrets.ANSIBLE_SSH_KEY }}" > id_rsa
-          chmod 400 id_rsa
+          chmod 600 id_rsa
 
       - name: Run playbook
         run: ansible-playbook -i ansible-etc/inventory -e ${{ inputs.extra_vars }} -l ${{ inputs.limit }} --key-file "id_rsa" playbooks/${{ inputs.playbook }}
