@@ -59,9 +59,8 @@ jobs:
 
       - name: Create ansible ssh key
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.ANSIBLE_SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+          echo "${{ secrets.ANSIBLE_SSH_KEY }}" > id_rsa
+          chmod 400 id_rsa
 
       - name: Run playbook
-        run: ansible-playbook -i ansible-etc/inventory -e ${{ inputs.extra_vars }} -l ${{ inputs.limit }} --key-file "~/.ssh/id_rsa" playbooks/${{ inputs.playbook }}
+        run: ansible-playbook -i ansible-etc/inventory -e ${{ inputs.extra_vars }} -l ${{ inputs.limit }} --key-file "id_rsa" playbooks/${{ inputs.playbook }}
