@@ -60,7 +60,7 @@ jobs:
       - name: Create ansible ssh key
         run: |
           echo "${{ secrets.ANSIBLE_SSH_KEY }}" > ~/.ssh/id_rsa
-          sed -i 's/\r//' ~/.ssh/id_rsa
+          sed -i 's/\r//' ~/.ssh/id_rsa || echo "Unable to convert line endings"
           chmod 400 ~/.ssh/id_rsa
 
       - name: Run playbook
