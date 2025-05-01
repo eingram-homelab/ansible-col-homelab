@@ -59,9 +59,9 @@ jobs:
 
       - name: Create ansible ssh key
         run: |
-          echo "${{ secrets.ANSIBLE_SSH_KEY }}" > ~/.ssh/id_rsa
-          sed -i 's/\r//' ~/.ssh/id_rsa || echo "Unable to convert line endings"
-          chmod 400 ~/.ssh/id_rsa
+          echo "${{ secrets.ANSIBLE_SSH_KEY }}" > ~/id_rsa
+          sed -i 's/\r//' ~/id_rsa || echo "Unable to convert line endings"
+          chmod 400 ~/id_rsa
 
       - name: Run playbook
-        run: ansible-playbook -i ansible-etc/inventory -e ${{ inputs.extra_vars }} -l ${{ inputs.limit }} --key-file "~/.ssh/id_rsa" playbooks/${{ inputs.playbook }}
+        run: ansible-playbook -i ansible-etc/inventory -e ${{ inputs.extra_vars }} -l ${{ inputs.limit }} --key-file "~/id_rsa" playbooks/${{ inputs.playbook }}
