@@ -19,7 +19,7 @@ collections:
 - community.digitalocean
 - name: https://github.com/eingram23/ansible-col-homelab.git
   type: git
-  version: main
+  version: develop
 - name: https://github.com/eingram23/ansible-col-pihole.git
   type: git
   version: main
@@ -52,4 +52,4 @@ collections:
   version: main
 - name: https://github.com/eingram23/ansible-col-linux.git
   type: git
-  version: main
+  version: develop
