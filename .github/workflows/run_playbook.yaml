@@ -49,9 +49,9 @@ jobs:
       - name: Install Ansible
         run: |
           python -m pip install --upgrade pip
-          pip install hvac==2.3.0 pyvmomi==8.0.3.0.1 ansible-core==2.18.5
-          pip install --upgrade setuptools
-          pip install --upgrade git+https://github.com/vmware/vsphere-automation-sdk-python.git
+          pip install --user hvac==2.3.0 pyvmomi==8.0.3.0.1 ansible-core==2.18.5 passlib==1.7.4
+          pip install --user --upgrade setuptools
+          pip install --user --upgrade git+https://github.com/vmware/vsphere-automation-sdk-python.git
           
       - name: Install Ansible collections
         run: |
