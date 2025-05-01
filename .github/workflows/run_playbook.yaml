@@ -32,7 +32,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: eingram-homelab/ansible-col-homelab
-          ref: main
+          ref: develop
         
       - name: Checkout Ansible ETC Code
         uses: actions/checkout@v4
