@@ -1,0 +1,53 @@
+---
+- name: Post Terraform Rancher2 Setup
+  hosts: localhost
+  gather_facts: false
+  become: false
+
+  tasks:
+
+    - name: Create .kube folder
+      ansible.builtin.file:
+        path: ~/.kube
+        state: directory
+        mode: '0755'
+
+    - name: Create kubeconfig
+      ansible.builtin.copy:
+        content: "{{ kubeconfig }}"
+        dest: ~/.kube/config
+        mode: '0400'
+
+    - name: Obtain cluster node names
+      ansible.builtin.shell:
+        cmd: "kubectl get nodes -o jsonpath='{.items[*].metadata.name}'"
+      changed_when: false
+      register: cluster_nodes
+
+    - name: Create list from cluster node names
+      ansible.builtin.set_fact:
+        cluster_nodes_list: "{{ cluster_nodes.stdout.split() }}"
+
+    - name: Add host with cluster node names
+      ansible.builtin.add_host:
+        name: "{{ node_item }}"
+        groups: temp_cluster_nodes
+      loop: "{{ cluster_nodes_list }}"
+      loop_control:
+        loop_var: node_item
+
+    - name: Run new_build playbook on cluster nodes
+      ansible.builtin.import_playbook:
+        name: eingram23.homelab.new_build
+      vars:
+        hostvar: "{{ hostvars['localhost']['temp_cluster_nodes'] | default([]) }}"
+
+    - name: Install kubernetes steps
+      ansible.builtin.include_role:
+        name: eingram23.kubernetes.{{ component_item }}
+      loop:
+        - vsphere_csi
+        - metallb
+        - external_secrets
+      loop_control:
+        loop_var: component_item
