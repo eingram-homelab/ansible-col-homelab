@@ -5,9 +5,6 @@
   become: false
 
   tasks:
-
-    - debug: 
-        msg: "Running post_terraform_rancher2.yaml playbook"
         
     - name: Create .kube folder
       ansible.builtin.file:
@@ -39,12 +36,18 @@
       loop_control:
         loop_var: node_item
 
-    - name: Run new_build playbook on cluster nodes
-      ansible.builtin.import_playbook:
-        name: eingram23.homelab.new_build
-      vars:
-        hostvar: "{{ hostvars['localhost']['temp_cluster_nodes'] | default([]) }}"
+- name: Run new_build playbook on cluster nodes
+  ansible.builtin.import_playbook: eingram23.homelab.new_build
+  vars:
+    hostvar: "{{ hostvars['localhost']['temp_cluster_nodes'] | default([]) }}"
 
+- name: Post Terraform Rancher2 Setup
+  hosts: localhost
+  gather_facts: false
+  become: false
+
+  tasks:
+  
     - name: Install kubernetes steps
       ansible.builtin.include_role:
         name: eingram23.kubernetes.{{ component_item }}
