@@ -19,14 +19,6 @@ on:
         description: 'Ansible user for the playbook run'
         required: true
         type: string
-      cluster_name:
-        description: 'Cluster to run the playbook on'
-        required: true
-        type: string
-      cluster_lb_ip:
-        description: 'Load balancer IP for the playbook run'
-        required: true
-        type: string
 
 jobs:
   run_new_build_playbook:
