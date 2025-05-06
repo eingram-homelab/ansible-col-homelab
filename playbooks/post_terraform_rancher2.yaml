@@ -6,6 +6,9 @@
 
   tasks:
 
+    - debug: 
+        msg: "Running post_terraform_rancher2.yaml playbook"
+        
     - name: Create .kube folder
       ansible.builtin.file:
         path: ~/.kube
