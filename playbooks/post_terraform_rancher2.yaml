@@ -14,7 +14,7 @@
 
     - name: Create kubeconfig
       ansible.builtin.copy:
-        content: "{{ kubeconfig | b64decode}}"
+        content: "{{ lookup('hashi_vault', 'secret=secret/kubernetes/' + cluster + ':kubeconfig' | default('')) }}"
         dest: ~/.kube/config
         mode: '0400'
 
