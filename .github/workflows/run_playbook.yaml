@@ -68,4 +68,5 @@ jobs:
           chmod 400 ~/id_rsa
 
       - name: Run playbook
-        run: ansible-playbook -i ansible-etc/inventory -e ${{ inputs.extra_vars }} -l ${{ inputs.limit }} --key-file "~/id_rsa" playbooks/${{ inputs.playbook }}
+        run: |
+          ansible-playbook -i ansible-etc/inventory -e "${{ inputs.extra_vars }}" -l ${{ inputs.limit }} --key-file "~/id_rsa" playbooks/${{ inputs.playbook }}
