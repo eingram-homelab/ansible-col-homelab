@@ -34,21 +34,58 @@
       changed_when: false
       register: cluster_nodes
 
+    - name: Obtain cluster control plane node names
+      ansible.builtin.shell:
+        cmd: "kubectl get nodes -l node-role.kubernetes.io/control-plane -o name | cut -d'/' -f2"
+      changed_when: false
+      register: cp_nodes
+
     - name: Create list from cluster node names
       ansible.builtin.set_fact:
         cluster_nodes_list: "{{ cluster_nodes.stdout.split() }}"
 
+    - name: Create list from control plane names
+      ansible.builtin.set_fact:
+        control_plane_nodes_list: "{{ cp_nodes.stdout.split() }}"
+
     - name: Add host with cluster node names
       ansible.builtin.add_host:
-        hostname: "{{ node_item }}.local.lan"
-        ansible_host: "{{ node_item }}.local.lan"
+        hostname: "{{ cluster_node_item }}.local.lan"
+        ansible_host: "{{ cluster_node_item }}.local.lan"
         groups: temp_cluster_nodes
       loop: "{{ cluster_nodes_list }}"
       loop_control:
-        loop_var: node_item
+        loop_var: cluster_node_item
+
+    - name: Add host with control plane node names
+      ansible.builtin.add_host:
+        hostname: "{{ cp_node_item }}.local.lan"
+        ansible_host: "{{ cp_node_item }}.local.lan"
+        groups: temp_cp_nodes
+      loop: "{{ control_plane_nodes_list }}"
+      loop_control:
+        loop_var: cp_node_item
 
 - name: Run new_build playbook on cluster nodes
   ansible.builtin.import_playbook: eingram23.homelab.new_build
   vars:
     hostvar: "temp_cluster_nodes"
 
+- name: Run control plane tasks
+  hosts: temp_cp_nodes
+  gather_facts: false
+  become: true
+
+  tasks:
+
+    - name: Create vsphere-csi config file to disable cloud controller
+      ansible.builtin.copy:
+        content: "disable-cloud-controller: true"
+        dest: /etc/rancher/k3s/config.yaml.d/vsphere-csi.yaml
+        mode: '0600'
+
+    - name: Restart k3s
+      ansible.builtin.shell: |
+        sh k3s-killall.sh
+        systemctl restart k3s
+        
