@@ -73,4 +73,4 @@ jobs:
 
       - name: Run playbook
         run: |
-          ansible-playbook -i ansible-etc/inventory -e "${{ inputs.extra_vars }}" ${{ inputs.limit }} --key-file "~/id_rsa" playbooks/${{ inputs.playbook }}
+          ansible-playbook -i ansible-etc/inventory -e "${{ inputs.extra_vars }}" ${{ inputs.limit }} --key-file "~/id_rsa" playbooks/${{ inputs.playbook }} -vvvv
