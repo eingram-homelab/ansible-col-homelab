@@ -1,5 +1,5 @@
 ---
-- name: Post Terraform Rancher2 Setup
+- name: Setup Kubernetes environment
   hosts: localhost
   gather_facts: false
   become: false
@@ -39,16 +39,16 @@
 - name: Run new_build playbook on cluster nodes
   ansible.builtin.import_playbook: eingram23.homelab.new_build
   vars:
-    hostvar: "{{ hostvars['localhost']['temp_cluster_nodes'] | default([]) }}"
+    hostvar: "temp_cluster_nodes"
 
-- name: Post Terraform Rancher2 Setup
+- name: Setup Kubernetes components
   hosts: localhost
   gather_facts: false
   become: false
 
   tasks:
-  
-    - name: Install kubernetes steps
+
+    - name: Install kubernetes components
       ansible.builtin.include_role:
         name: eingram23.kubernetes.{{ component_item }}
       loop:
