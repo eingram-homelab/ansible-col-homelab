@@ -18,6 +18,16 @@
         dest: ~/.kube/config
         mode: '0400'
 
+    - name: Install kubernetes components
+      ansible.builtin.include_role:
+        name: eingram23.kubernetes.{{ component_item }}
+      loop:
+        - vsphere_csi
+        - metallb
+        - external_secrets
+      loop_control:
+        loop_var: component_item
+
     - name: Obtain cluster node names
       ansible.builtin.shell:
         cmd: "kubectl get nodes -o jsonpath='{.items[*].metadata.name}'"
@@ -42,19 +52,3 @@
   vars:
     hostvar: "temp_cluster_nodes"
 
-- name: Setup Kubernetes components
-  hosts: localhost
-  gather_facts: false
-  become: false
-
-  tasks:
-
-    - name: Install kubernetes components
-      ansible.builtin.include_role:
-        name: eingram23.kubernetes.{{ component_item }}
-      loop:
-        - vsphere_csi
-        - metallb
-        - external_secrets
-      loop_control:
-        loop_var: component_item
