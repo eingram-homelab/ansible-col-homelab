@@ -84,8 +84,35 @@
         dest: /etc/rancher/k3s/config.yaml.d/vsphere-csi.yaml
         mode: '0600'
 
+- name: Run additional tasks on cluster nodes
+  hosts: temp_cluster_nodes
+  gather_facts: false
+  become: true
+
+  tasks:
+
+    - name: Get VM ID
+      delegate_to: localhost
+      community.vmware.vmware_vm_info:
+        hostname: vcsa-1.local.lan
+        username: "{{ lookup('hashi_vault', 'secret/vsphere/vcsa:vsphere_username') }}"
+        password: "{{ lookup('hashi_vault', 'secret/vsphere/vcsa:vsphere_password') }}"
+        validate_certs: false
+        vm_name: "{{ hostvars[inventory_hostname]['ansible_hostname'] }}"
+      register: vm_info
+
+    - name: Create vsphere-node config file to set provider-id
+      ansible.builtin.copy:
+        content: |
+          kubelet-arg+:
+            - provider-id=vsphere://{{ vm_info.virtual_machines[0].moid }}
+        dest: /etc/rancher/k3s/config.yaml.d/vsphere-node.yaml
+        mode: '0600'
+
     - name: Restart k3s
-      ansible.builtin.shell: |
-        sh k3s-killall.sh
-        systemctl restart k3s
+      ansible.builtin.systemd:
+        name: k3s
+        state: restarted
+        enabled: true
+
         
