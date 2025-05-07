@@ -30,7 +30,8 @@
 
     - name: Add host with cluster node names
       ansible.builtin.add_host:
-        name: "{{ node_item }}"
+        hostname: "{{ node_item }}.local.lan"
+        ansible_host: "{{ node_item }}.local.lan"
         groups: temp_cluster_nodes
       loop: "{{ cluster_nodes_list }}"
       loop_control:
