@@ -38,7 +38,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: eingram-homelab/ansible-etc
-          ref: develop
+          ref: main
           path: ansible-etc
 
       - name: Setup Python
