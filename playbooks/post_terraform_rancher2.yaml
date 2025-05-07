@@ -98,7 +98,7 @@
         username: "{{ lookup('hashi_vault', 'secret/vsphere/vcsa:vsphere_username') }}"
         password: "{{ lookup('hashi_vault', 'secret/vsphere/vcsa:vsphere_password') }}"
         validate_certs: false
-        vm_name: "{{ hostvars[inventory_hostname]['ansible_hostname'] }}"
+        vm_name: "{{ inventory_hostname }}"
       register: vm_info
 
     - name: Create vsphere-node config file to set provider-id
