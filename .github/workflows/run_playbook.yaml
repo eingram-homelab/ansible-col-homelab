@@ -63,7 +63,8 @@ jobs:
           pip install passlib==1.7.4
           pip install --upgrade setuptools
           pip install --upgrade git+https://github.com/vmware/vsphere-automation-sdk-python.git
-          
+          export PATH="/home/runner/.local/bin:$PATH"
+
       - name: Install Ansible collections
         run: |
           ansible-galaxy collection install -r collections/requirements.yml
