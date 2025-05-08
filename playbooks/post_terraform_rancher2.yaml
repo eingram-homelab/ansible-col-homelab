@@ -52,6 +52,7 @@
       ansible.builtin.add_host:
         hostname: "{{ cluster_node_item }}"
         ansible_host: "{{ cluster_node_item }}.local.lan"
+        ansible_user: ansible
         groups: temp_cluster_nodes
       loop: "{{ cluster_nodes_list }}"
       loop_control:
@@ -59,8 +60,9 @@
 
     - name: Add host with control plane node names
       ansible.builtin.add_host:
-        hostname: "{{ cp_node_item }}.local.lan"
+        hostname: "{{ cp_node_item }}"
         ansible_host: "{{ cp_node_item }}.local.lan"
+        ansible_user: ansible
         groups: temp_cp_nodes
       loop: "{{ control_plane_nodes_list }}"
       loop_control:
@@ -86,7 +88,7 @@
 
 - name: Run additional tasks on cluster nodes
   hosts: temp_cluster_nodes
-  gather_facts: false
+  gather_facts: true
   become: true
 
   tasks:
