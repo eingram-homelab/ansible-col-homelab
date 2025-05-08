@@ -71,12 +71,12 @@ jobs:
 
       - name: Create ansible ssh key
         run: |
-          echo "${{ secrets.ANSIBLE_SSH_KEY }}" > ~/id_rsa
-          sed -i 's/\r//' ~/id_rsa || echo "Unable to convert line endings"
-          chmod 400 ~/id_rsa
+          echo "${{ secrets.ANSIBLE_SSH_KEY }}" > /var/tmp/id_rsa
+          sed -i 's/\r//' /var/tmp/id_rsa || echo "Unable to convert line endings"
+          chmod 600 /var/tmp/id_rsa
 
       - name: Run playbook
         run: |
           export PATH="/home/runner/.local/bin:$PATH"
           export K8S_AUTH_KUBECONFIG=~/.kube/config
-          ansible-playbook -i ansible-etc/inventory -e "${{ inputs.extra_vars }}" ${{ inputs.limit }} --key-file "~/id_rsa" playbooks/${{ inputs.playbook }}
+          ansible-playbook -i ansible-etc/inventory -e "${{ inputs.extra_vars }}" ${{ inputs.limit }} --key-file "/var/tmp/id_rsa" playbooks/${{ inputs.playbook }}
