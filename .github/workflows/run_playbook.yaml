@@ -63,10 +63,10 @@ jobs:
           pip install passlib==1.7.4
           pip install --upgrade setuptools
           pip install --upgrade git+https://github.com/vmware/vsphere-automation-sdk-python.git
-          export PATH="/home/runner/.local/bin:$PATH"
 
       - name: Install Ansible collections
         run: |
+          export PATH="/home/runner/.local/bin:$PATH"
           ansible-galaxy collection install -r collections/requirements.yml
 
       - name: Create ansible ssh key
@@ -77,5 +77,6 @@ jobs:
 
       - name: Run playbook
         run: |
+          export PATH="/home/runner/.local/bin:$PATH"
           export K8S_AUTH_KUBECONFIG=~/.kube/config
           ansible-playbook -i ansible-etc/inventory -e "${{ inputs.extra_vars }}" ${{ inputs.limit }} --key-file "~/id_rsa" playbooks/${{ inputs.playbook }}
