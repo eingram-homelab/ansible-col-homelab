@@ -111,6 +111,18 @@
         dest: /etc/rancher/k3s/config.yaml.d/vsphere-node.yaml
         mode: '0600'
 
+    - name: Disable swap for current session
+      when: ansible_swaptotal_mb > 0
+      ansible.builtin.command: swapoff -a
+
+    - name: Disable swap permanently, persist reboots
+      ansible.builtin.lineinfile:
+        path: /etc/fstab
+        regexp: '^(\s*)([^#\n]+\s+)(\w+\s+)swap(\s+.*)$'
+        line: '#\1\2\3swap\4'
+        backrefs: true
+        backup: true
+
     - name: Restart k3s
       ansible.builtin.systemd:
         name: k3s
