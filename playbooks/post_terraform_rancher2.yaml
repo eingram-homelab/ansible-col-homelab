@@ -136,6 +136,39 @@
         rm -f csi_driver_connect.pp
         rm -f csi_driver_connect.te
 
+    - name: Set selinux policy to allow local-path provisioner access to storage dir
+      ansible.builtin.shell:
+        cmd: |
+          cat << EOF > localpathpolicy.te
+          module localpathpolicy 1.0;
+
+          require {
+              type usr_t;
+              type init_t;
+              type container_t;
+              type container_var_lib_t;
+              class dir { search write add_name create remove_name rmdir setattr getattr };
+              class file { create open write append read unlink setattr getattr };
+          }
+
+          #============= container_t ==============
+          allow container_t container_var_lib_t:file { create open write append read setattr getattr unlink };
+          allow container_t container_var_lib_t:dir { add_name create remove_name rmdir setattr write search };
+          allow container_t init_t:dir search;
+          allow container_t usr_t:dir { add_name create remove_name rmdir setattr getattr write };
+          allow container_t usr_t:file { create unlink write setattr getattr };
+          allow container_t init_t:file { read open };
+          EOF
+          
+          checkmodule -M -m -o localpathpolicy.mod localpathpolicy.te
+          semodule_package -o localpathpolicy.pp -m localpathpolicy.mod
+          semodule -i localpathpolicy.pp
+          rm -f localpathpolicy.mod
+          rm -f localpathpolicy.te
+          rm -f localpathpolicy.pp
+          semanage fcontext -a -t container_file_t "/var/lib/rancher/k3s/storage(/.*)?"
+          restorecon -R -v /var/lib/rancher/k3s/storage
+
     - name: Restart k3s
       ansible.builtin.systemd:
         name: k3s
