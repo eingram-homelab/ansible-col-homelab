@@ -123,6 +123,14 @@
         backrefs: true
         backup: true
 
+    - name: Set selinux policy to allow vsphere-csi access to csi.sock
+      ansible.builtin.shell: |
+        dnf install -y policycoreutils-python-utils
+        ausearch -c "csi-node-driver" --raw | audit2allow -M csi_driver_connect
+        semodule -i csi_driver_connect.pp
+        rm -f csi_driver_connect.pp
+        rm -f csi_driver_connect.te
+
     - name: Restart k3s
       ansible.builtin.systemd:
         name: k3s
