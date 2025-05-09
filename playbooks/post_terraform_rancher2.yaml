@@ -28,6 +28,11 @@
       loop_control:
         loop_var: component_item
 
+    - name: Deploy k3s-metrics-service
+      ansible.builtin.include_role:
+        name: eingram23.kubernetes.k3s
+        tasks_from: k3s-metrics-service
+        
     - name: Obtain cluster node names
       ansible.builtin.shell:
         cmd: "kubectl get nodes -o jsonpath='{.items[*].metadata.name}'"
@@ -50,8 +55,9 @@
 
     - name: Add host with cluster node names
       ansible.builtin.add_host:
-        hostname: "{{ cluster_node_item }}.local.lan"
+        hostname: "{{ cluster_node_item }}"
         ansible_host: "{{ cluster_node_item }}.local.lan"
+        ansible_user: ansible
         groups: temp_cluster_nodes
       loop: "{{ cluster_nodes_list }}"
       loop_control:
@@ -59,8 +65,9 @@
 
     - name: Add host with control plane node names
       ansible.builtin.add_host:
-        hostname: "{{ cp_node_item }}.local.lan"
+        hostname: "{{ cp_node_item }}"
         ansible_host: "{{ cp_node_item }}.local.lan"
+        ansible_user: ansible
         groups: temp_cp_nodes
       loop: "{{ control_plane_nodes_list }}"
       loop_control:
@@ -86,7 +93,7 @@
 
 - name: Run additional tasks on cluster nodes
   hosts: temp_cluster_nodes
-  gather_facts: false
+  gather_facts: true
   become: true
 
   tasks:
@@ -98,7 +105,7 @@
         username: "{{ lookup('hashi_vault', 'secret/vsphere/vcsa:vsphere_username') }}"
         password: "{{ lookup('hashi_vault', 'secret/vsphere/vcsa:vsphere_password') }}"
         validate_certs: false
-        vm_name: "{{ hostvars[inventory_hostname]['ansible_hostname'] }}"
+        vm_name: "{{ inventory_hostname }}"
       register: vm_info
 
     - name: Create vsphere-node config file to set provider-id
@@ -108,6 +115,59 @@
             - provider-id=vsphere://{{ vm_info.virtual_machines[0].moid }}
         dest: /etc/rancher/k3s/config.yaml.d/vsphere-node.yaml
         mode: '0600'
+
+    - name: Disable swap for current session
+      when: ansible_swaptotal_mb > 0
+      ansible.builtin.command: swapoff -a
+
+    - name: Disable swap permanently, persist reboots
+      ansible.builtin.lineinfile:
+        path: /etc/fstab
+        regexp: '^(\s*)([^#\n]+\s+)(\w+\s+)swap(\s+.*)$'
+        line: '#\1\2\3swap\4'
+        backrefs: true
+        backup: true
+
+    - name: Set selinux policy to allow vsphere-csi access to csi.sock
+      ansible.builtin.shell: |
+        dnf install -y policycoreutils-python-utils
+        ausearch -c "csi-node-driver" --raw | audit2allow -M csi_driver_connect
+        semodule -i csi_driver_connect.pp
+        rm -f csi_driver_connect.pp
+        rm -f csi_driver_connect.te
+
+    - name: Set selinux policy to allow local-path provisioner access to storage dir
+      ansible.builtin.shell:
+        cmd: |
+          cat << EOF > localpathpolicy.te
+          module localpathpolicy 1.0;
+
+          require {
+              type usr_t;
+              type init_t;
+              type container_t;
+              type container_var_lib_t;
+              class dir { search write add_name create remove_name rmdir setattr getattr };
+              class file { create open write append read unlink setattr getattr };
+          }
+
+          #============= container_t ==============
+          allow container_t container_var_lib_t:file { create open write append read setattr getattr unlink };
+          allow container_t container_var_lib_t:dir { add_name create remove_name rmdir setattr write search };
+          allow container_t init_t:dir search;
+          allow container_t usr_t:dir { add_name create remove_name rmdir setattr getattr write };
+          allow container_t usr_t:file { create unlink write setattr getattr };
+          allow container_t init_t:file { read open };
+          EOF
+          
+          checkmodule -M -m -o localpathpolicy.mod localpathpolicy.te
+          semodule_package -o localpathpolicy.pp -m localpathpolicy.mod
+          semodule -i localpathpolicy.pp
+          rm -f localpathpolicy.mod
+          rm -f localpathpolicy.te
+          rm -f localpathpolicy.pp
+          semanage fcontext -a -t container_file_t "/var/lib/rancher/k3s/storage(/.*)?"
+          restorecon -R -v /var/lib/rancher/k3s/storage
 
     - name: Restart k3s
       ansible.builtin.systemd:
