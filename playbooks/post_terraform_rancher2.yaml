@@ -28,6 +28,11 @@
       loop_control:
         loop_var: component_item
 
+    - name: Deploy k3s-metrics-service
+      ansible.builtin.include_role:
+        name: eingram23.kubernetes.k3s
+        tasks_from: k3s-metrics-service
+        
     - name: Obtain cluster node names
       ansible.builtin.shell:
         cmd: "kubectl get nodes -o jsonpath='{.items[*].metadata.name}'"
