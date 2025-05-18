@@ -5,10 +5,6 @@
   become: false
 
   tasks:
-    - name: Wait 5 minutes for k3s to be ready
-      ansible.builtin.pause:
-        seconds: 300
-
     - name: Create .kube folder
       ansible.builtin.file:
         path: ~/.kube
