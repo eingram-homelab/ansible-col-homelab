@@ -5,7 +5,10 @@
   become: false
 
   tasks:
-        
+    - name: Wait 5 minutes for k3s to be ready
+      ansible.builtin.pause:
+        seconds: 300
+
     - name: Create .kube folder
       ansible.builtin.file:
         path: ~/.kube
@@ -168,7 +171,7 @@
     #       rm -f localpathpolicy.pp
     #       semanage fcontext -a -t container_file_t "/var/lib/rancher/k3s/storage(/.*)?"
     #       restorecon -R -v /var/lib/rancher/k3s/storage
-    
+
     - name: Restart k3s
       ansible.builtin.systemd:
         name: k3s
