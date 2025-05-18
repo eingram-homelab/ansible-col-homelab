@@ -169,6 +169,9 @@
     #       semanage fcontext -a -t container_file_t "/var/lib/rancher/k3s/storage(/.*)?"
     #       restorecon -R -v /var/lib/rancher/k3s/storage
 
+    - name: Enable selinux
+      ansible.builtin.command: setenforce 1
+
     - name: Restart k3s
       ansible.builtin.systemd:
         name: k3s
