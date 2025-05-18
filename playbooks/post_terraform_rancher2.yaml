@@ -168,10 +168,17 @@
     #       semanage fcontext -a -t container_file_t "/var/lib/rancher/k3s/storage(/.*)?"
     #       restorecon -R -v /var/lib/rancher/k3s/storage
 
-    - name: Restart k3s
-      ansible.builtin.systemd:
-        name: k3s
-        state: restarted
-        enabled: true
+    - name: Populate service facts
+      ansible.builtin.service_facts:
 
-        
+    - name: Restart k3s on control plane nodes
+      when: ansible_facts['services']['k3s.service']['status'] | default('not-found') != 'not-found'
+      ansible.builtin.service:
+        state: restarted
+        name: k3s.service
+
+    - name: Restart k3s-agent on worker nodes
+      when: ansible_facts['services']['k3s-agent.service']['status'] | default('not-found') != 'not-found'
+      ansible.builtin.service:
+        state: restarted
+        name: k3s-agent.service
