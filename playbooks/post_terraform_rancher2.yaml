@@ -98,23 +98,23 @@
 
   tasks:
 
-    - name: Get VM ID
-      delegate_to: localhost
-      community.vmware.vmware_vm_info:
-        hostname: vcsa-1.local.lan
-        username: "{{ lookup('hashi_vault', 'secret/vsphere/vcsa:vsphere_username') }}"
-        password: "{{ lookup('hashi_vault', 'secret/vsphere/vcsa:vsphere_password') }}"
-        validate_certs: false
-        vm_name: "{{ inventory_hostname }}"
-      register: vm_info
+    # - name: Get VM ID
+    #   delegate_to: localhost
+    #   community.vmware.vmware_vm_info:
+    #     hostname: vcsa-1.local.lan
+    #     username: "{{ lookup('hashi_vault', 'secret/vsphere/vcsa:vsphere_username') }}"
+    #     password: "{{ lookup('hashi_vault', 'secret/vsphere/vcsa:vsphere_password') }}"
+    #     validate_certs: false
+    #     vm_name: "{{ inventory_hostname }}"
+    #   register: vm_info
 
-    - name: Create vsphere-node config file to set provider-id
-      ansible.builtin.copy:
-        content: |
-          kubelet-arg+:
-            - provider-id=vsphere://{{ vm_info.virtual_machines[0].moid }}
-        dest: /etc/rancher/k3s/config.yaml.d/vsphere-node.yaml
-        mode: '0600'
+    # - name: Create vsphere-node config file to set provider-id
+    #   ansible.builtin.copy:
+    #     content: |
+    #       kubelet-arg+:
+    #         - provider-id=vsphere://{{ vm_info.virtual_machines[0].moid }}
+    #     dest: /etc/rancher/k3s/config.yaml.d/vsphere-node.yaml
+    #     mode: '0600'
 
     - name: Disable swap for current session
       when: ansible_swaptotal_mb > 0
@@ -169,9 +169,6 @@
     #       semanage fcontext -a -t container_file_t "/var/lib/rancher/k3s/storage(/.*)?"
     #       restorecon -R -v /var/lib/rancher/k3s/storage
 
-    - name: Enable selinux
-      ansible.builtin.command: setenforce 1
-      
     - name: Restart k3s
       ansible.builtin.systemd:
         name: k3s
