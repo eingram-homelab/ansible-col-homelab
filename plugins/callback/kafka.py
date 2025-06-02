@@ -89,7 +89,7 @@ class CallbackModule(CallbackBase):
         super(CallbackModule, self).set_options(task_keys=task_keys, var_options=var_options, direct=direct)
 
         # Get configuration from environment variables or set defaults
-        self.bootstrap_servers = self.get_option('bootstrap_servers') or 'bootstrap-dev.local.lan:443'
+        self.bootstrap_servers = self.get_option('bootstrap_servers') or 'bootstrap.local.lan:443'
         self.topic = self.get_option('topic') or 'ansible-events'
         self.ssl_ca_location = self.get_option('ssl_ca_location') or 'ca.crt'
         self.ssl_certificate_location = self.get_option('ssl_certificate_location')
