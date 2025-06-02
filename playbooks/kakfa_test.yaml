@@ -1,0 +1,10 @@
+- name: Test Kafka
+  hosts: localhost
+  gather_facts: false
+  become: false
+
+  tasks:
+
+    - name: Run kafka producer script
+      ansible.builtin.include_role:
+        name: eingram23.homelab.kafka
