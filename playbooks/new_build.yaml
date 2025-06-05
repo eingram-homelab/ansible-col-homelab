@@ -32,29 +32,3 @@
     - name: Install root certificate into trusted store
       ansible.builtin.include_role:
         name: eingram23.linux.certificates
-
-    - name: Run additional tasks
-      when: task is defined
-      block:
-        - name: Install container engine
-          ansible.builtin.include_role:
-            name: eingram23.linux.container_host
-          when: "'container_host' in task"
-
-        - name: Setup zfs
-          ansible.builtin.include_role:
-            name: eingram23.linux.filesystem
-            tasks_from: zfs
-          when: "'zfs' in task"
-
-        - name: Setup nfs
-          ansible.builtin.include_role:
-            name: eingram23.linux.filesystem
-            tasks_from: nfs
-          when: "'nfs' in task"
-
-        - name: Setup samba
-          ansible.builtin.include_role:
-            name: eingram23.linux.filesystem
-            tasks_from: samba
-          when: "'samba' in task"
