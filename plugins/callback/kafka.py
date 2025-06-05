@@ -173,9 +173,15 @@ class CallbackModule(CallbackBase):
         })
 
     def v2_playbook_on_play_start(self, play):
+        vm = play.get_variable_manager()
+        extra_vars = vm.extra_vars
+        self.hostvar = extra_vars['hostvar']
+        self.test = extra_vars['test']
         """Play start event"""
         self.send_message('play_start', {
-            'play': play.name
+            'play': play.name,
+            'hostvar': self.hostvar,
+            'test': self.test,
             # 'play_uuid': str(play._uuid),
             # 'playbook_uuid': self._uuid
         })
