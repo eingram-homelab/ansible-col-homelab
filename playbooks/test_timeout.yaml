@@ -1,0 +1,11 @@
+---
+- name: Test
+  hosts: localhost
+  timeout: "{{ timeout }}"
+  become: false
+
+  tasks:
+
+    - name: Sleep
+      ansible.builtin.pause:
+        seconds: 10
