@@ -1,0 +1,18 @@
+---
+- name: Test
+  hosts: localhost
+  become: false
+
+  tasks:
+
+    - name: Task 1
+      ansible.builtin.command:
+        cmd: echo "This is task 1"
+
+    - name: Debug
+      debug:
+        msg: "extra var"
+
+    - name: Sleep
+      ansible.builtin.pause:
+        seconds: 10
