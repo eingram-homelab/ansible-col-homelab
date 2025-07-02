@@ -26,24 +26,23 @@ DOCUMENTATION = '''
           - section: callback_kafka
             key: topic
         default: test-topic1
-      ssl_ca_location:
+      ssl_ca_pem:
         description: Path to CA certificate for SSL connection
         env:
-          - name: KAFKA_SSL_CA_LOCATION
+          - name: KAFKA_SSL_CA_PEM
         ini:
           - section: callback_kafka
-            key: ssl_ca_location
-        default: /etc/pki/ca-trust/source/anchors/ca.crt
+            key: ssl_ca_pem
         required: false
-      ssl_certificate_location:
+      ssl_certificate_pem:
         description: Path to client certificate for SSL connection
         env:
-          - name: KAFKA_SSL_CERTIFICATE_LOCATION
+          - name: KAFKA_SSL_CERTIFICATE_PEM
         required: false
-      ssl_key_location:
+      ssl_key_pem:
         description: Path to client key for SSL connection
         env:
-          - name: KAFKA_SSL_KEY_LOCATION
+          - name: KAFKA_SSL_KEY_PEM
         required: false
       ssl_key_password:
         description: Password for the client key
@@ -94,9 +93,9 @@ class CallbackModule(CallbackBase):
         # Get configuration from environment variables or set defaults
         self.bootstrap_servers = self.get_option('bootstrap_servers')
         self.topic = self.get_option('topic')
-        self.ssl_ca_location = self.get_option('ssl_ca_location')
-        self.ssl_certificate_location = self.get_option('ssl_certificate_location')
-        self.ssl_key_location = self.get_option('ssl_key_location')
+        self.ssl_ca_pem = self.get_option('ssl_ca_pem')
+        self.ssl_certificate_pem = self.get_option('ssl_certificate_pem')
+        self.ssl_key_pem = self.get_option('ssl_key_pem')
         self.ssl_key_password = self.get_option('ssl_key_password')
         self.security_protocol = self.get_option('security_protocol')
 
@@ -115,13 +114,13 @@ class CallbackModule(CallbackBase):
 
             # Add SSL config if security protocol is SSL
             if self.security_protocol in ('SSL', 'SASL_SSL'):
-                conf['ssl.ca.location'] = self.ssl_ca_location
+                conf['ssl.ca.pem'] = self.ssl_ca_pem
                 
-                if self.ssl_certificate_location:
-                    conf['ssl.certificate.location'] = self.ssl_certificate_location
+                if self.ssl_certificate_pem:
+                    conf['ssl.certificate.pem'] = self.ssl_certificate_pem
                 
-                if self.ssl_key_location:
-                    conf['ssl.key.location'] = self.ssl_key_location
+                if self.ssl_key_pem:
+                    conf['ssl.key.pem'] = self.ssl_key_pem
                 
                 if self.ssl_key_password:
                     conf['ssl.key.password'] = self.ssl_key_password
