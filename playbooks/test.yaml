@@ -5,11 +5,12 @@
 
   tasks:
 
-    - name: Task 1
-      ansible.builtin.command:
-        cmd: echo "This is task 1"
+    - name: Task 1 - Failure
+      ansible.builtin.debug:
+        msg: "This task is skipped"
+      when: true
 
-    - name: Debug
-      debug:
-        msg: "extra var"
-
+    - name: Task 1 - Success
+      ansible.builtin.debug:
+        msg: "This task is successful"
+      when: false
