@@ -186,18 +186,18 @@ class CallbackModule(CallbackBase):
             # 'playbook_uuid': self._uuid
         })
 
-    def v2_playbook_on_task_start(self, task, is_conditional):
-        """Task start event"""
-        task_uuid = str(task._uuid)
-        self.task_start_times[task_uuid] = datetime.datetime.now()
-        # if task.name == 'Test':
-        self.send_message('task_start', {
-            'task': task.name,
-            'task_uuid': task_uuid,
-            'task_action': task.action,
-            'is_conditional': is_conditional
-            # 'playbook_uuid': self._uuid
-        })
+    # def v2_playbook_on_task_start(self, task, is_conditional):
+    #     """Task start event"""
+    #     task_uuid = str(task._uuid)
+    #     self.task_start_times[task_uuid] = datetime.datetime.now()
+    #     # if task.name == 'Test':
+    #     self.send_message('task_start', {
+    #         'task': task.name,
+    #         'task_uuid': task_uuid,
+    #         'task_action': task.action,
+    #         'is_conditional': is_conditional
+    #         # 'playbook_uuid': self._uuid
+    #     })
 
     def v2_runner_on_ok(self, result):
         """Task success event"""
@@ -206,47 +206,50 @@ class CallbackModule(CallbackBase):
         if task_uuid in self.task_start_times:
             start_time = self.task_start_times[task_uuid]
             duration = (datetime.datetime.now() - start_time).total_seconds()
-        # if result._task.name == 'Test':
+        # if result._task.name == 'Task 1 - Success':
+        #     paas_result = "success"
+        # elif result._task.name == 'Task 1 - Failure':
+        #     paas_result = "failure"
         self.send_message('task_ok', {
             'task': result._task.name,
             'task_uuid': task_uuid,
             'task_action': result._task.action,
             'host': result._host.name,
-            'stdout': result._result.get('stdout', ''),
-            'debug': result._result.get('debug', ''),
+            'result': result._result,
+            # 'paas_result': paas_result,
             'changed': result._result.get('changed', False),
             'duration': duration
-            # 'playbook_uuid': self._uuid
+        # 'playbook_uuid': self._uuid
         })
 
-    def v2_runner_on_failed(self, result, ignore_errors=False):
-        """Task failure event"""
-        task_uuid = str(result._task._uuid)
-        duration = None
-        if task_uuid in self.task_start_times:
-            start_time = self.task_start_times[task_uuid]
-            duration = (datetime.datetime.now() - start_time).total_seconds()
+    # def v2_runner_on_failed(self, result, ignore_errors=False):
+    #     """Task failure event"""
+    #     task_uuid = str(result._task._uuid)
+    #     duration = None
+    #     if task_uuid in self.task_start_times:
+    #         start_time = self.task_start_times[task_uuid]
+    #         duration = (datetime.datetime.now() - start_time).total_seconds()
         
-        self.send_message('task_failed', {
-            'task': result._task.name,
-            'task_uuid': task_uuid,
-            'task_action': result._task.action,
-            'host': result._host.name,
-            'message': self._dump_results(result._result),
-            'ignore_errors': ignore_errors,
-            'duration': duration
-            # 'playbook_uuid': self._uuid
-        })
+    #     self.send_message('task_failed', {
+    #         'task': result._task.name,
+    #         'task_uuid': task_uuid,
+    #         'task_action': result._task.action,
+    #         'host': result._host.name,
+    #         'message': self._dump_results(result._result),
+    #         'ignore_errors': ignore_errors,
+    #         'duration': duration
+    #         # 'playbook_uuid': self._uuid
+    #     })
 
-    def v2_runner_on_skipped(self, result):
-        """Task skipped event"""
-        self.send_message('task_skipped', {
-            'task': result._task.name,
-            'task_uuid': str(result._task._uuid),
-            'task_action': result._task.action,
-            'host': result._host.name
-            # 'playbook_uuid': self._uuid
-        })
+    # def v2_runner_on_skipped(self, result):
+    #     """Task skipped event"""
+    #     self.send_message('task_skipped', {
+    #         'task': result._task.name,
+    #         'task_uuid': str(result._task._uuid),
+    #         'task_action': result._task.action,
+    #         'host': result._host.name
+    #         # 'playbook_uuid': self._uuid
+    #     })
 
     def v2_playbook_on_stats(self, stats):
         """Playbook completion event with stats"""
