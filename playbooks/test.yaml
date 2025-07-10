@@ -1,16 +1,10 @@
 ---
 - name: Test
-  hosts: localhost
+  hosts: all
   become: false
 
   tasks:
 
-    - name: Task 1 - Failure
-      ansible.builtin.debug:
-        msg: "This task is skipped"
-      when: true
-
-    - name: Task 1 - Success
-      ansible.builtin.debug:
-        msg: "This task is successful"
-      when: false
+    - name: callback
+      ansible.builtin.pause:
+        seconds: 9999
