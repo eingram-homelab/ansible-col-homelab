@@ -7,4 +7,4 @@
 
     - name: callback
       ansible.builtin.pause:
-        seconds: 9999
+        seconds: 10
