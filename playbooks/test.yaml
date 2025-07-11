@@ -8,3 +8,9 @@
     - name: callback
       ansible.builtin.pause:
         seconds: 10
+      delegate_to: homenas.local.lan
+
+    - name: callback
+      ansible.builtin.pause:
+        seconds: 100
+      delegate_to: podhost-dev.local.lan
