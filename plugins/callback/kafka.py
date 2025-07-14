@@ -225,7 +225,6 @@ class CallbackModule(CallbackBase):
     #     if task_uuid in self.task_start_times:
     #         start_time = self.task_start_times[task_uuid]
     #         duration = (datetime.datetime.now() - start_time).total_seconds()
-        
     #     self.send_message('task_failed', {
     #         'task': result._task.name,
     #         'task_uuid': task_uuid,
@@ -247,6 +246,17 @@ class CallbackModule(CallbackBase):
     #         # 'playbook_uuid': self._uuid
     #     })
 
+    def v2_runner_on_unreachable(self, result):
+        """Task unreachable event"""
+        self.send_message('host_unreachable', {
+            'task': result._task.name,
+            'task_uuid': str(result._task._uuid),
+            'task_action': result._task.action,
+            'host': result._host.name,
+            'message': self._dump_results(result._result)
+            # 'playbook_uuid': self._uuid
+        })
+  
     def v2_playbook_on_stats(self, stats):
         """Playbook completion event with stats"""
         hosts = sorted(stats.processed.keys())
