@@ -256,7 +256,7 @@ class CallbackModule(CallbackBase):
             'message': self._dump_results(result._result)
             # 'playbook_uuid': self._uuid
         })
-  
+        
     def v2_playbook_on_stats(self, stats):
         """Playbook completion event with stats"""
         hosts = sorted(stats.processed.keys())
