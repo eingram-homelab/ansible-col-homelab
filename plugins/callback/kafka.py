@@ -173,10 +173,8 @@ class CallbackModule(CallbackBase):
 
     def v2_playbook_on_play_start(self, play):
         vm = play.get_variable_manager()
-        global extra_vars, hostvars
+        global extra_vars
         extra_vars = vm.extra_vars
-        hostvars = vm.get_vars()['hostvars']
-        print(os.environ.get('TOWER_JOB_ID'))
         # self.hostvar = extra_vars['hostvar']
         # self.test = extra_vars['test']
         """Play start event"""
