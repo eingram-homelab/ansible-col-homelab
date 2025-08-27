@@ -1,16 +1,11 @@
 ---
 - name: Test
-  hosts: all
+  hosts: localhost
   become: false
 
   tasks:
 
     - name: callback
       ansible.builtin.pause:
-        seconds: 10
-      delegate_to: homenas.local.lan
+        seconds: 1
 
-    - name: callback
-      ansible.builtin.pause:
-        seconds: 100
-      delegate_to: podhost-dev.local.lan
