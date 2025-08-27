@@ -78,7 +78,7 @@ class CallbackModule(CallbackBase):
     CALLBACK_VERSION = 2.0
     CALLBACK_TYPE = 'notification'
     CALLBACK_NAME = 'eingram23.homelab.kafka'
-    CALLBACK_NEEDS_ENABLED = True
+    CALLBACK_NEEDS_ENABLED = False
 
     def __init__(self):
         super(CallbackModule, self).__init__()
@@ -173,7 +173,10 @@ class CallbackModule(CallbackBase):
 
     def v2_playbook_on_play_start(self, play):
         vm = play.get_variable_manager()
+        global extra_vars, hostvars
         extra_vars = vm.extra_vars
+        hostvars = vm.get_vars()['hostvars']
+        print(os.environ.get('TOWER_JOB_ID'))
         # self.hostvar = extra_vars['hostvar']
         # self.test = extra_vars['test']
         """Play start event"""
@@ -212,7 +215,6 @@ class CallbackModule(CallbackBase):
                 'task_action': result._task.action,
                 'host': result._host.name,
                 'result': result._result,
-                # 'paas_result': paas_result,
                 'changed': result._result.get('changed', False),
                 'duration': duration
             # 'playbook_uuid': self._uuid
