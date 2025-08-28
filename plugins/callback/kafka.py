@@ -56,7 +56,6 @@ DOCUMENTATION = '''
         default: SSL
 '''
 
-import dicttools
 import json
 import socket
 import uuid
