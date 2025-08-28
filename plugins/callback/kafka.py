@@ -200,12 +200,12 @@ class CallbackModule(CallbackBase):
         """Task success event"""
         task_uuid = str(result._task._uuid)
         duration = None
-        print(result)
         if task_uuid in self.task_start_times:
             start_time = self.task_start_times[task_uuid]
             duration = (datetime.datetime.now() - start_time).total_seconds()
         if 'callback' in result._task.name:
             self.send_message('task_ok', {
+                'ansible_job_id': result._result.get('ansible_job_id'),
                 'task': result._task.name,
                 'task_uuid': task_uuid,
                 'task_action': result._task.action,
