@@ -205,12 +205,14 @@ class CallbackModule(CallbackBase):
             duration = (datetime.datetime.now() - start_time).total_seconds()
         if 'callback' in result._task.name:
             self.send_message('task_ok', {
-                'ansible_job_id': result._result.get('ansible_job_id'),
+                'job_id': self.ansible_job_id,
+                'job_id1': self.tower_job_id,
                 'task': result._task.name,
                 'task_uuid': task_uuid,
                 'task_action': result._task.action,
                 'host': result._host.name,
                 'changed': result._result.get('changed', False),
+                'result': result._result,
                 'duration': duration
             # 'playbook_uuid': self._uuid
         })
