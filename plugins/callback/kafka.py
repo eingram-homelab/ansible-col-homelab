@@ -167,7 +167,7 @@ class CallbackModule(CallbackBase):
     def v2_playbook_on_start(self, playbook):
         """Playbook start event"""
         self.send_message('playbook_start', {
-            'playbook': playbook._file_name
+            'playbook': playbook._file_name,
             'ansible_job_id': self.tower_job_id
             # 'playbook_uuid': self._uuid
         })
