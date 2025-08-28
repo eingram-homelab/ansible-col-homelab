@@ -56,7 +56,7 @@ DOCUMENTATION = '''
         default: SSL
 '''
 
-import os
+import dicttools
 import json
 import socket
 import uuid
@@ -201,6 +201,7 @@ class CallbackModule(CallbackBase):
         """Task success event"""
         task_uuid = str(result._task._uuid)
         duration = None
+        print(result)
         if task_uuid in self.task_start_times:
             start_time = self.task_start_times[task_uuid]
             duration = (datetime.datetime.now() - start_time).total_seconds()
@@ -210,7 +211,6 @@ class CallbackModule(CallbackBase):
                 'task_uuid': task_uuid,
                 'task_action': result._task.action,
                 'host': result._host.name,
-                'result': result,
                 'changed': result._result.get('changed', False),
                 'duration': duration
             # 'playbook_uuid': self._uuid
