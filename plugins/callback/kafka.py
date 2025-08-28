@@ -177,7 +177,8 @@ class CallbackModule(CallbackBase):
         extra_vars = vm.extra_vars
         """Play start event"""
         self.send_message('play_start', {
-            'play': play.name
+            'play': play.name,
+            'ansible_job_id': self.tower_job_id
             # 'hostvar': self.hostvar,
             # 'test': self.test,
             # 'play_uuid': str(play._uuid),
@@ -206,7 +207,7 @@ class CallbackModule(CallbackBase):
             duration = (datetime.datetime.now() - start_time).total_seconds()
         if 'callback' in result._task.name:
             self.send_message('task_ok', {
-                'ansible_job_id': os.environ.get('tower_job_id'),
+                'ansible_job_id': self.tower_job_id,
                 'task': result._task.name,
                 'task_uuid': task_uuid,
                 'task_action': result._task.action,
