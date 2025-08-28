@@ -18,9 +18,10 @@ collections:
 - ansible.posix
 - community.digitalocean
 
-# - name: https://github.com/eingram23/ansible-col-homelab.git
-#   type: git
-#   version: main
+- name: https://github.com/eingram23/ansible-col-homelab.git
+  type: git
+  version: main
+
 # - name: https://github.com/eingram23/ansible-col-pihole.git
 #   type: git
 #   version: main
