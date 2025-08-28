@@ -168,6 +168,7 @@ class CallbackModule(CallbackBase):
         """Playbook start event"""
         self.send_message('playbook_start', {
             'playbook': playbook._file_name
+            'ansible_job_id': self.tower_job_id
             # 'playbook_uuid': self._uuid
         })
 
