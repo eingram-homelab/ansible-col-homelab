@@ -1,0 +1,35 @@
+---
+- name: Setup new linux server for Homelab environment
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Assert ip is defined
+      ansible.builtin.assert:
+        that:
+          - ip is defined
+        fail_msg: "The 'ip' variable must be defined."
+        success_msg: "The 'ip' variable is defined."
+
+    - name: Add host with provided IP
+      ansible.builtin.add_host:
+        hostname: new_host
+        ansible_host: "{{ ip }}"
+        ansible_user: eingram
+        ansible_password: "{{ lookup('hashi_vault', 'secret=secret/ssh/ansible:ssh_password no_log=true') }}"
+        ansible_sudo_pass: "{{ lookup('hashi_vault', 'secret=secret/ssh/ansible:ssh_password no_log=true') }}"
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+        groups: new_build_hosts
+      when: ip is defined
+      changed_when: false
+
+- name: Run new_build playbook on new host
+  hosts: new_build_hosts
+  gather_facts: true
+  become: true
+  become_method: sudo
+
+  tasks:
+    - name: Include new_build role
+      ansible.builtin.include_role:
+        name: eingram23.homelab.new_build

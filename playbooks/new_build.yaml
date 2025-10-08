@@ -7,28 +7,6 @@
 
   tasks:
 
-    - name: Add linux user
+    - name: Include new_build role
       ansible.builtin.include_role:
-        name: eingram23.linux.user_mgmt
-        tasks_from: add_user
-      vars:
-        user_account: "{{ user_item }}"
-        user_password: "{{ lookup('hashi_vault', 'secret=secret/ssh/ansible:ssh_password') }}"
-        admin_user: "yes"
-      loop:
-        - ansible
-        - eingram
-      loop_control:
-        loop_var: user_item
-
-    - name: Set up chrony
-      ansible.builtin.include_role:
-        name: eingram23.linux.chrony
-
-    - name: Install core packages
-      ansible.builtin.include_role:
-        name: eingram23.linux.install_core_pkgs
-
-    - name: Install root certificate into trusted store
-      ansible.builtin.include_role:
-        name: eingram23.linux.certificates
+        name: eingram23.homelab.new_build

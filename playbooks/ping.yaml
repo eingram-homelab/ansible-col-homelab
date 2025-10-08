@@ -16,3 +16,9 @@
     - name: Show result
       ansible.builtin.debug:
         var: result
+
+    - name: Force failure
+      ansible.builtin.fail:
+        msg: "failed"
+      ignore_errors: true
+      

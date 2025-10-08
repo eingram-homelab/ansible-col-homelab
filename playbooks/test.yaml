@@ -5,7 +5,12 @@
 
   tasks:
 
-    - name: callback
-      ansible.builtin.pause:
-        seconds: 1
+    # - name: Set test fact
+    #   ansible.builtin.set_fact:
+    #     test_bool: true
 
+    - name: Debug
+      when:
+        - not test_bool | default(false) | bool
+      ansible.builtin.debug:
+        msg: "Test"

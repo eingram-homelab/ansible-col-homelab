@@ -1,20 +1,13 @@
 ---
 - name: Run tasks
-  hosts: "HL-DC1.homelab.local"
+  hosts: all
   gather_facts: false
   become: true
+  # become_user: "{{ ansible_user }}"
 
   tasks:
 
-    - name: Test
+    - name: sleep
       ansible.windows.win_shell: |
-       get-ciminstance win32_process -filter "name = 'fontdrvhost.exe'" |select commandline
-       write-host "test"
-      register: process
-
-    - debug:
-        var: process.stdout
-
-      # - debug: msg="Splunk is running"
-      #   when: process.stdout is search("splund.exe")
-...
+        start-sleep 999999
+        

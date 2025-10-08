@@ -17,7 +17,6 @@ DOCUMENTATION = '''
         ini:
           - section: callback_kafka
             key: bootstrap_servers
-        default: bootstrap.local.lan:443
       topic:
         description: Kafka topic to publish messages to
         env:
@@ -61,6 +60,8 @@ import socket
 import uuid
 import datetime
 from ansible.plugins.callback import CallbackBase
+from ansible.errors import AnsibleError, AnsibleParserError
+from ansible.module_utils.common.text.converters import to_native
 
 try:
     from confluent_kafka import Producer
@@ -77,7 +78,7 @@ class CallbackModule(CallbackBase):
     CALLBACK_VERSION = 2.0
     CALLBACK_TYPE = 'notification'
     CALLBACK_NAME = 'eingram23.homelab.kafka'
-    CALLBACK_NEEDS_ENABLED = False
+    CALLBACK_NEEDS_ENABLED = True
 
     def __init__(self):
         super(CallbackModule, self).__init__()
@@ -85,6 +86,18 @@ class CallbackModule(CallbackBase):
         self.host = socket.gethostname()
         self.session_id = str(uuid.uuid4())
         self.task_start_times = {}
+        
+        # Init extra vars
+        self.extra_vars = {}
+        
+        # Init options
+        self.bootstrap_servers = None
+        self.topic = None
+        self.ssl_ca_pem = None
+        self.ssl_certificate_pem = None
+        self.ssl_key_pem = None
+        self.ssl_key_password = None
+        self.security_protocol = None
 
     def set_options(self, task_keys=None, var_options=None, direct=None):
         super(CallbackModule, self).set_options(task_keys=task_keys, var_options=var_options, direct=direct)
@@ -109,6 +122,7 @@ class CallbackModule(CallbackBase):
                 'bootstrap.servers': self.bootstrap_servers,
                 'client.id': f'ansible-{self.host}',
                 'security.protocol': self.security_protocol,
+                'delivery.timeout.ms': 30000
             }
 
             # Add SSL config if security protocol is SSL
@@ -128,12 +142,12 @@ class CallbackModule(CallbackBase):
             self._display.v("Kafka producer initialized")
         except Exception as e:
             self.disabled = True
-            self._display.warning(f"Error initializing Kafka producer: {str(e)}")
+            raise AnsibleError("Error initializing Kafka producer: %s" % to_native(e))
 
     def delivery_report(self, err, msg):
         """Callback for message delivery results"""
         if err is not None:
-            self._display.warning(f'Message delivery failed: {err}')
+            raise AnsibleError('Message delivery failed: %s' % to_native(err))
         else:
             self._display.vvv(f'Message delivered to {msg.topic()} [{msg.partition()}] at offset {msg.offset()}')
 
@@ -159,9 +173,9 @@ class CallbackModule(CallbackBase):
                 value=message_json.encode('utf-8'),
                 callback=self.delivery_report
             )
-            self.producer.poll(0)  # Trigger delivery reports without blocking
+            self.producer.flush()  # Trigger delivery reports without blocking
         except Exception as e:
-            self._display.warning(f"Failed to send message to Kafka: {str(e)}")
+            raise AnsibleError('Error sending kafka message: %s' % to_native(e))
 
     def v2_playbook_on_start(self, playbook):
         """Playbook start event"""
@@ -172,16 +186,19 @@ class CallbackModule(CallbackBase):
 
     def v2_playbook_on_play_start(self, play):
         vm = play.get_variable_manager()
-        global extra_vars
-        extra_vars = vm.extra_vars
+        # global extra_vars
+        self.extra_vars = vm.extra_vars
+        self.vm = vm.get_vars()
+        # self._display.display(f"Extra Vars: {self.extra_vars}")
+        # self._display.display(f"All Vars: {self.vm}")
         """Play start event"""
-        self.send_message('play_start', {
-            'play': play.name
-            # 'hostvar': self.hostvar,
+        #  self.send_message('play_start', {
+        #      'play': play.name,
+        #      'var1': self.extra_vars.get('var1')
             # 'test': self.test,
             # 'play_uuid': str(play._uuid),
             # 'playbook_uuid': self._uuid
-        })
+        # })
 
     # def v2_playbook_on_task_start(self, task, is_conditional):
     #     """Task start event"""
@@ -200,24 +217,23 @@ class CallbackModule(CallbackBase):
         """Task success event"""
         task_uuid = str(result._task._uuid)
         duration = None
-        # Iterate through result and print
-        for key, value in result._result.items():
-            print(f"Result[{key}]: {value}")
+        testvar = result._task.args.get('testvar', None)
+        testvar = str(testvar)
+        self._display.display(testvar)
         if task_uuid in self.task_start_times:
             start_time = self.task_start_times[task_uuid]
             duration = (datetime.datetime.now() - start_time).total_seconds()
-        if 'callback' in result._task.name:
-            self.send_message('task_ok', {
-                # 'job_id': self.ansible_job_id,
-                # 'job_id1': self.tower_job_id,
-                'task': result._task.name,
-                'task_uuid': task_uuid,
-                'task_action': result._task.action,
-                'host': result._host.name,
-                'changed': result._result.get('changed', False),
-                'result': result._result,
-                'duration': duration
-            # 'playbook_uuid': self._uuid
+        # if 'callback' in result._task.name:
+        self.send_message('task_ok', {
+            'task': result._task.name,
+            'task_uuid': task_uuid,
+            'task_action': result._task.action,
+            'host': result._host.name,
+            'changed': result._result.get('changed', False),
+            'result': result._result,
+            'duration': duration,
+            'testvariable': testvar
+          # 'playbook_uuid': self._uuid
         })
 
     # def v2_runner_on_failed(self, result, ignore_errors=False):
@@ -255,22 +271,19 @@ class CallbackModule(CallbackBase):
             'task_uuid': str(result._task._uuid),
             'task_action': result._task.action,
             'host': result._host.name,
-            'message': self._dump_results(result._result)
+            'result': result._result,
+            'var1': self.extra_vars.get('var1')
             # 'playbook_uuid': self._uuid
         })
         
-    def v2_playbook_on_stats(self, stats):
-        """Playbook completion event with stats"""
-        hosts = sorted(stats.processed.keys())
-        summary = {}
-        for host in hosts:
-            summary[host] = stats.summarize(host)
+    # def v2_playbook_on_stats(self, stats):
+    #     """Playbook completion event with stats"""
+    #     hosts = sorted(stats.processed.keys())
+    #     summary = {}
+    #     for host in hosts:
+    #         summary[host] = stats.summarize(host)
         
-        self.send_message('playbook_stats', {
-            # 'playbook_uuid': self._uuid,
-            'status': summary
-        })
-        
-        # Flush any remaining messages before exiting
-        if self.producer:
-            self.producer.flush()
+    #     self.send_message('playbook_stats', {
+    #         # 'playbook_uuid': self._uuid,
+    #         'status': summary
+    #     })
