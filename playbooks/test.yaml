@@ -1,16 +1,10 @@
 ---
 - name: Test
-  hosts: localhost
-  become: false
+  hosts: all
+  gather_facts: false
 
   tasks:
-
-    # - name: Set test fact
-    #   ansible.builtin.set_fact:
-    #     test_bool: true
-
-    - name: Debug
-      when:
-        - not test_bool | default(false) | bool
-      ansible.builtin.debug:
-        msg: "Test"
+    - name: Sleep for 30 seconds
+      ansible.builtin.pause:
+        seconds: 30
+      delegate_to: localhost
