@@ -1,10 +1,9 @@
 ---
 - name: Test
-  hosts: all
+  hosts: localhost
   gather_facts: false
 
   tasks:
-    - name: Sleep for 30 seconds
+    - name: pause
       ansible.builtin.pause:
-        seconds: 30
-      delegate_to: localhost
+        minutes: 999
