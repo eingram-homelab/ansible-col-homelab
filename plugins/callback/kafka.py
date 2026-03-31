@@ -90,6 +90,12 @@ class CallbackModule(CallbackBase):
         # Init extra vars
         self.extra_vars = {}
         
+        # Track hosts already reported as unreachable for this playbook run
+        self.unreachable_seen = set()
+
+        # Ensure disabled flag has a default
+        self.disabled = False
+        
         # Init options
         self.bootstrap_servers = None
         self.topic = None
@@ -139,7 +145,7 @@ class CallbackModule(CallbackBase):
                     conf['ssl.key.password'] = self.ssl_key_password
 
             self.producer = Producer(conf)
-            self._display.v("Kafka producer initialized")
+            self._display.display("Kafka producer initialized")
         except Exception as e:
             self.disabled = True
             raise AnsibleError("Error initializing Kafka producer: %s" % to_native(e))
@@ -149,7 +155,7 @@ class CallbackModule(CallbackBase):
         if err is not None:
             raise AnsibleError('Message delivery failed: %s' % to_native(err))
         else:
-            self._display.vvv(f'Message delivered to {msg.topic()} [{msg.partition()}] at offset {msg.offset()}')
+            self._display.display(f'Message delivered to {msg.topic()} [{msg.partition()}] at offset {msg.offset()}')
 
     def send_message(self, event_type, event_data):
         """Send event to Kafka topic"""
@@ -173,7 +179,7 @@ class CallbackModule(CallbackBase):
                 value=message_json.encode('utf-8'),
                 callback=self.delivery_report
             )
-            self.producer.flush()  # Trigger delivery reports without blocking
+            self.producer.poll(0)  # Trigger delivery reports without blocking
         except Exception as e:
             raise AnsibleError('Error sending kafka message: %s' % to_native(e))
 
@@ -219,7 +225,7 @@ class CallbackModule(CallbackBase):
         duration = None
         testvar = result._task.args.get('testvar', None)
         testvar = str(testvar)
-        self._display.display(testvar)
+
         if task_uuid in self.task_start_times:
             start_time = self.task_start_times[task_uuid]
             duration = (datetime.datetime.now() - start_time).total_seconds()
@@ -266,24 +272,40 @@ class CallbackModule(CallbackBase):
 
     def v2_runner_on_unreachable(self, result):
         """Task unreachable event"""
-        self.send_message('host_unreachable', {
-            'task': result._task.name,
-            'task_uuid': str(result._task._uuid),
-            'task_action': result._task.action,
-            'host': result._host.name,
-            'result': result._result,
-            'var1': self.extra_vars.get('var1')
-            # 'playbook_uuid': self._uuid
+        host = str(result._host.name)
+
+        # Check if the host has already been reported as unreachable
+        if host in self.unreachable_seen:
+            self._display.display(f"Skipping unreachable event for host {host} as it is already marked unreachable.")
+            return  # Skip processing if the host is already marked as unreachable
+
+        # Mark the host as unreachable for the entire playbook
+        self.unreachable_seen.add(host)
+        self._display.display(f"Host {host} marked as unreachable.")
+
+        try:
+            self.send_message('host_unreachable', {
+                'task': result._task.name,
+                'task_uuid': str(result._task._uuid),
+                'task_action': result._task.action,
+                'host': host,
+                'result': result._result,
+                'var1': self.extra_vars.get('var1')
+            })
+        except Exception as e:
+            raise AnsibleError(f"Error sending unreachable message: {to_native(e)}")
+        
+    def v2_playbook_on_stats(self, stats):
+        """Playbook completion event with stats"""
+        hosts = sorted(stats.processed.keys())
+        summary = {}
+        for host in hosts:
+            summary[host] = stats.summarize(host)
+        
+        self.send_message('playbook_stats', {
+            # 'playbook_uuid': self._uuid,
+            'status': summary
         })
-        
-    # def v2_playbook_on_stats(self, stats):
-    #     """Playbook completion event with stats"""
-    #     hosts = sorted(stats.processed.keys())
-    #     summary = {}
-    #     for host in hosts:
-    #         summary[host] = stats.summarize(host)
-        
-    #     self.send_message('playbook_stats', {
-    #         # 'playbook_uuid': self._uuid,
-    #         'status': summary
-    #     })
+
+        self.unreachable_seen.clear()  # Clear unreachable hosts for next playbook run
+        self.producer.flush()  # Ensure all messages are sent before exiting
