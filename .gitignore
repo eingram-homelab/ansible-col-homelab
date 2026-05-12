@@ -53,3 +53,6 @@ $RECYCLE.BIN/
 
 # Ignore dynamic inventory generated files
 *.pyc
+
+ansible-navigator.log
+/playbooks/tests
