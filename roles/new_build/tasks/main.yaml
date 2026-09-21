@@ -37,6 +37,12 @@
 - name: Non-Proxmox tasks
   when: "'proxmox' not in group_names"
   block:
+    - name: Update packages
+      ansible.builtin.dnf:
+        name: "*"
+        state: latest
+        update_cache: true
+
     - name: Set up chrony
       ansible.builtin.include_role:
         name: eingram23.linux.chrony
@@ -62,3 +68,12 @@
 - name: Install root certificate into trusted store
   ansible.builtin.include_role:
     name: eingram23.linux.certificates
+
+- name: Reboot server
+  ansible.builtin.reboot:
+    reboot_timeout: 600
+
+- name: Wait for server to come back up
+  ansible.builtin.wait_for_connection:
+    timeout: 600
+    delay: 15
