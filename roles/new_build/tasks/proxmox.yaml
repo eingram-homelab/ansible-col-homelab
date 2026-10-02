@@ -1,0 +1,32 @@
+---
+- name: Install sudo
+  ansible.builtin.package:
+    name: sudo
+    state: present
+
+- name: Remove enterprise repositories
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/{{ ent_repo_item }}
+    state: absent
+  loop:
+    - pve-enterprise.sources
+    - ceph.sources
+  loop_control:
+    loop_var: ent_repo_item
+
+- name: Add no-subscription repositories
+  ansible.builtin.copy:
+    src: "{{ nonent_repo_item }}"
+    dest: /etc/apt/sources.list.d
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - proxmox.sources
+    - ceph.sources
+  loop_control:
+    loop_var: nonent_repo_item
+
+- name: Update repository cache
+  ansible.builtin.apt:
+    update_cache: true

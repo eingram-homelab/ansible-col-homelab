@@ -1,55 +1,25 @@
 ---
-- name: Proxmox tasks
-  when: "'proxmox' in group_names"
-  block:
-    - name: Install sudo
-      ansible.builtin.package:
-        name: sudo
-        state: present
+- name: Apply security updates
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+    update_cache: true
+    security: true
+  register: new_build_update_packages
 
-    - name: Remove enterprise repositories
-      ansible.builtin.file:
-        path: /etc/apt/sources.list.d/{{ ent_repo_item }}
-        state: absent
-      loop:
-        - pve-enterprise.sources
-        - ceph.sources
-      loop_control:
-        loop_var: ent_repo_item
+- name: Update installed kernel packages
+  ansible.builtin.dnf:
+    name: "kernel*"
+    state: latest
+    update_only: true
 
-    - name: Add no-subscription repositories
-      ansible.builtin.copy:
-        src: "{{ nonent_repo_item }}"
-        dest: /etc/apt/sources.list.d
-        owner: root
-        group: root
-        mode: '0644'
-      loop:
-        - proxmox.sources
-        - ceph.sources
-      loop_control:
-        loop_var: nonent_repo_item
+- name: Set up chrony
+  ansible.builtin.include_role:
+    name: eingram23.linux.chrony
 
-    - name: Update repository cache
-      ansible.builtin.apt:
-        update_cache: true
-
-- name: Non-Proxmox tasks
-  when: "'proxmox' not in group_names"
-  block:
-    - name: Update packages
-      ansible.builtin.dnf:
-        name: "*"
-        state: latest
-        update_cache: true
-
-    - name: Set up chrony
-      ansible.builtin.include_role:
-        name: eingram23.linux.chrony
-
-    - name: Install core packages
-      ansible.builtin.include_role:
-        name: eingram23.linux.install_core_pkgs
+- name: Install core packages
+  ansible.builtin.include_role:
+    name: eingram23.linux.install_core_pkgs
 
 - name: Add admin user {{ user_item }}
   ansible.builtin.include_role:
@@ -69,11 +39,43 @@
   ansible.builtin.include_role:
     name: eingram23.linux.certificates
 
-- name: Reboot server
-  ansible.builtin.reboot:
-    reboot_timeout: 600
+- name: Enable fstrim timer
+  ansible.builtin.systemd_service:
+    name: fstrim.timer
+    state: started
+    enabled: true
 
-- name: Wait for server to come back up
-  ansible.builtin.wait_for_connection:
-    timeout: 600
-    delay: 15
+- name: Journald tasks
+  notify:
+    - Restart journald
+    - Restart server
+  block:
+    - name: Copy journald.conf to remote host
+      ansible.builtin.copy:
+        src: journald.conf
+        dest: /etc/systemd/journald.conf
+        mode: "0644"
+
+    - name: Enable journald persistent storage
+      ansible.builtin.file:
+        path: /var/log/journal
+        state: directory
+        owner: root
+        group: systemd-journal
+        mode: "2755"
+
+- name: Install RLP packages
+  ansible.builtin.include_role:
+    name: eingram23.linux.{{ rlp_item.key }}
+  vars:
+    task: "{{ rlp_item.value.task }}"
+    version: "{{ rlp_item.value.version }}"
+  loop: "{{ new_build_rlp_packages | dict2items }}"
+  loop_control:
+    loop_var: rlp_item
+
+- name: Check if server needs reboot
+  ansible.builtin.command: needs-restarting
+  register: new_build_needs_restarting
+  changed_when: new_build_needs_restarting.rc !=0
+  notify: Restart server

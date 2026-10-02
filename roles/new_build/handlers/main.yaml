@@ -1,0 +1,17 @@
+---
+- name: Restart journald
+  ansible.builtin.systemd_service:
+    name: systemd-journald
+    state: restarted
+
+- name: Reboot server
+  ansible.builtin.reboot:
+    reboot_timeout: 60
+  listen: "Restart server"
+
+- name: Wait for server to come back up
+  ansible.builtin.wait_for_connection:
+    delay: 0
+    timeout: 600
+  listen: "Restart server"
+
